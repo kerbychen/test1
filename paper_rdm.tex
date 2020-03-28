@@ -1,0 +1,1336 @@
+\documentclass[12pt]{article} %hidelinks
+\usepackage{setspace}
+%\doublespacing
+\usepackage[section]{placeins}
+\usepackage{hyperref}
+%\usepackage{natbib}
+\hypersetup{colorlinks,linkcolor={red},citecolor={blue},urlcolor={red}}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{pdfpages}
+\usepackage{pdflscape}
+\usepackage{natbib}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage[font=footnotesize,labelfont=bf]{caption}
+\usepackage[font=footnotesize,labelfont=bf]{subcaption}
+\usepackage{color}
+\usepackage[]{algorithm2e}
+\usepackage[utf8]{inputenc}
+
+\usepackage{tcolorbox}
+\usepackage[english]{babel}
+\usepackage[toc,page]{appendix}
+\usepackage{tikz}
+\usepackage{hyperref}
+\usetikzlibrary{arrows,backgrounds,calc,trees}
+
+\usetikzlibrary{positioning,shapes}
+\def\ns{\nodepart{second}}
+
+
+\newcommand{\fixmeSimon}[1]{\textbf{\emph{\textcolor{blue}{/* TBD: #1 */}}}}
+\newcommand{\fixmeAntoine}[1]{\textbf{\emph{\textcolor{red}{/* TBD: #1 */}}}}
+\newcommand{\fixmeDimitris}[1]{\textbf{\emph{\textcolor{green}{/* TBD: #1 */}}}}
+\newcommand{\bX}{\mathbf{X}}
+\newcommand{\bphi}{\bm{\phi}}
+\newcommand{\bPhi}{\bm{\Phi}}
+\newcommand{\bt}{\mathbf{t}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\bmm}{\mathbf{m}}
+\newcommand{\bK}{\mathbf{K}}
+\newcommand{\bI}{\mathbf{I}}
+\newcommand{\bV}{\mathbf{V}}
+\newcommand{\bTheta}{\bm{\Theta}}
+
+\newcommand{\GP}{\operatorname{GP}}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\BIC}{\operatorname{BIC}}
+\newcommand{\orth}{\operatorname{orth}}
+\newcommand{\randn}{\operatorname{randn}}
+
+\newcommand{\calD}{\mathcal{D}}
+\newcommand{\calN}{\mathcal{N}}
+\newcommand{\calM}{\mathcal{M}}
+\newcommand{\calL}{\mathcal{L}}
+\newcommand{\calU}{\mathcal{U}}
+\newcommand{\qref}[1]{Eq.~(\ref{eqn:#1})}
+\newcommand{\sref}[1]{Sec.~\ref{sec:#1}}
+\newcommand{\fref}[1]{Fig.~\ref{fig:#1}}
+
+\tikzset{multiline/.style={align=center,anchor=north}}
+\usepackage{ifthen}
+\usetikzlibrary{positioning}
+\usepackage{siunitx}
+\usepackage{datatool}
+\usepackage{booktabs}
+\usepackage{rotating}
+\usepackage{bm}
+\usepackage{bbm}
+\usepackage{tabularx}
+
+\usepackage{makecell}
+
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+
+
+\newcommand{\convexpath}[2]{
+[
+    create hullnodes/.code={
+        \global\edef\namelist{#1}
+        \foreach [count=\counter] \nodename in \namelist {
+            \global\edef\numberofnodes{\counter}
+            \node at (\nodename) [draw=none,name=hullnode\counter] {};
+        }
+        \node at (hullnode\numberofnodes) [name=hullnode0,draw=none] {};
+        \pgfmathtruncatemacro\lastnumber{\numberofnodes+1}
+        \node at (hullnode1) [name=hullnode\lastnumber,draw=none] {};
+    },
+    create hullnodes
+]
+($(hullnode1)!#2!-90:(hullnode0)$)
+\foreach [
+    evaluate=\currentnode as \previousnode using \currentnode-1,
+    evaluate=\currentnode as \nextnode using \currentnode+1
+    ] \currentnode in {1,...,\numberofnodes} {
+  let
+    \p1 = ($(hullnode\currentnode)!#2!-90:(hullnode\previousnode)$),
+    \p2 = ($(hullnode\currentnode)!#2!90:(hullnode\nextnode)$),
+    \p3 = ($(\p1) - (hullnode\currentnode)$),
+    \n1 = {atan2(\y3,\x3)},
+    \p4 = ($(\p2) - (hullnode\currentnode)$),
+    \n2 = {atan2(\y4,\x4)},
+    \n{delta} = {-Mod(\n1-\n2,360)}
+  in
+    {-- (\p1) arc[start angle=\n1, delta angle=\n{delta}, radius=#2] -- (\p2)}
+}
+-- cycle
+}
+
+
+
+
+
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}{Definition}
+
+
+\newcommand{\marlon}[1]{\textcolor{red}{\textbf{TBD Marlon: #1}}}
+\newcommand{\luca}[1]{\textcolor{blue}{\textbf{TBD Luca: #1}}}
+\newcommand{\simon}[1]{\textcolor{purple}{\textbf{TBD Simon: #1}}}
+\newcommand{\alll}[1]{\textcolor{teal}{\textbf{TBD All: #1}}}
+\newcommand{\quotes}[1]{``#1''}
+
+
+\newcommand{\x}{\mathbf{x}}
+\newcommand{\g}{\mathbf{g}}
+\newcommand{\m}{\mathbf{m}}
+\newcommand{\f}{\mathbf{f}}
+\newcommand{\nn}{\mathcal{N}_{\bm{\rho}}}
+\newcommand{\kb}{\mathbf{k}}
+\newcommand{\bb}{\mathbf{b}}
+\newcommand{\btheta}{\bm{\theta}}
+\newcommand{\dtr}{\mathcal{D}_{\text{train}}}
+\newcommand{\birth}{\text{birth}}
+\newcommand{\lr}{\alpha^{\text{learn}}}
+\newcommand{\brho}{\bm{\rho}}
+\newcommand{\antoine}[1]{\textcolor{red}{\textbf{TBD antoine: #1}}}
+
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}[1]{{\text{E}\left[ #1 \right]}}
+\newcommand{\Eind}[2]{{\text{E}_{#1}\left[ #2 \right]}}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\newcommand{\citepos}[1]{\citeauthor{#1}'s \citeyear{#1}}
+\newcommand{\citeposs}[1]{\citeauthor{#1}' \citeyear{#1}}
+
+
+
+\title{Adaptive Machine Learning:\\
+An application to credit risk modeling}
+
+ %\date{This version: \today }
+
+
+
+\author{
+Hui Chen\\
+MIT Sloan School of Management\\
+huichen@mit.edu\\
+\mbox{}\\
+Antoine Didisheim\\
+Department of Finance \\
+HEC Lausanne, University of Lausanne\\
+antoine.didisheim@unil.ch\\
+\mbox{}\\
+Simon Scheidegger \\
+Department of Finance \\
+HEC Lausanne, University of Lausanne\\
+simon.scheidegger@unil.ch\\
+}
+
+\date{\vspace{0.5cm} \today
+%\vspace{0.1cm}\\
+%\href{https://sites.google.com/site/simonscheidegger/publications}{Current version: this link}
+%\vspace{0.1cm}\\
+%\href{https://sites.google.com/site/simonscheidegger/}\\
+%Working Paper---preliminary and incomplete---do not distribute
+}
+
+\begin{document}
+\maketitle
+
+\newpage
+
+\begin{abstract}
+
+We investigate a machine learning decision-making problem in which the data generating process itself is adaptive to the algorithm.
+We consider a classification problem in which agents (borrowers) can perturb their data, trading off improved classification outcome
+by the algorithm against the potential cost of cheating.
+We propose a robustness scheme through a repeated game played between lenders and borrowers.
+Specifically, the lender proposes an algorithm to screen loan applications, while borrowers adapt to the model by falsifying their data.
+Perturbation by the borrower can potentially lead to an improvement in her application outcome.
+The cost of cheating is being caught, where the probability of fraud detection is increasing in the magnitude of the perturbation.
+We show that the repeated game converges to a robust decision-making function under various set-ups:
+including non-linear input and heterogeneous agents' risk aversion. If agents falsify their input to improve classification (linear perturbation) systematically, robust algorithms can reconstruct the original information from perturbed data. However, if the incentive to cheat is non-linear, for example, if only agents who can change their final classification do falsify their input (non-linear perturbation), some information is irrevocably lost by this perturbation process.
+We also investigate the robustness of the algorithm with respect to endogenous perturbations when the model is underspecified or overspecified. We do so by applying a simple logistic model to non-linear data and a universal approximator (neural network) to linear inputs. We show that underspecified models can converge to a stable, robust solution even when the input is highly non-linear. On the other hand, overspecified models are shown to be less robust to non-linear perturbation schemes.
+
+\end{abstract}
+
+\noindent Keywords: Deep Learning, 
+
+\medskip
+\noindent JEL classification: 
+
+
+\newpage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%\paragraph{200 w old abstract}
+%
+%In the context of machine learning-based decision-making in finance, we investigate a robustness scheme when the data generating process itself is adaptive to the algorithm. Specifically, we investigate cases where a lender proposes an algorithm to screen out borrowers. However, they can adapt to the algorithm by falsifying their inputs, trading off improved classification against a probability of getting caught.
+%We propose a robust algorithm for the lender's problem obtained through a repeated game. This game is shown to converge to a robust decision-making function under various set-ups, including non-linear inputs. If agents falsify their input systematically, robust algorithms can reconstruct the original information from perturbed data. However, if the incentive to cheat is discreet, for example, if only agents who can change their final classification do cheat, some information is irrevocably lost for the lender. We also investigate robustness to endogenous perturbations when the model is underspecified or overspecified. We do so by applying a logistic model to non-linear data and a universal approximator (neural network) to linear inputs. We show that underspecified models converge to a robust solution even when the input highly non-linear. On the other hand, overspecified models appear to be less robust to non-linear perturbations.
+%\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+\label{sec:Intro}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+Recently, quantitative loan screening has evolved from using linear discriminant and logistic classifiers to complex models like deep neural networks. 
+Recently, the role of these quantitative tools has started to shift from solely being a support to human decisions to the one of being the centerpiece of fully automated decision processes~\citep{zhao2017research}. 
+More generally, machine learning-based decision-making in finance is on the rise, with activities ranging from robot financial advisors to automatic trading algorithms. 
+
+In this context, the question of model robustness to endogenous perturbations of the inputs'\footnote{We define input here as the set of predictive variables used by a quantitative model to estimate credit-score risk or similar quantities used to make a financial decision.} distribution is particularly relevant, especially since the adversarial machine learning literature has shown that neural networks can be very sensitive to adversarial attacks~\citep[see, e.g.,][]{szegedy2013intriguing,goodfellow2014explaining,papernot2017practical}.\footnote{These attacks are defined as small modifications of a neural network's input in order to fool the network into a misclassification. 
+As an example, in machine vision---that is, machine learning applied to visual inputs---an adversarial attack can be defined as a slight modification of a picture which would not impede human identification of its content, but would fool a deep neural network. In this particular context, it has been shown that deep neural networks could be tricked into misclassification by modifying a single pixel \citep{su2019one}. 
+}
+This weakness of neural networks can be seen as especially important in financial contexts. Indeed, in economic theory, robust decision rules are often defined in terms of an equilibrium between competing rational agents maximizing their respective utilities~\citep[see, e.g.,][]{hansen2008robustness}.
+If a prospective borrower's utility can be increased by receiving a loan, and if this borrower is fully rational, she should adapt her behavior to the introduction of a new screening function by the lender. If we further assume that the lender would lose utility by according a loan to a borrower solely because she adapted to his decision rule, it also follows that the lender should, in turn, adapt to the borrower's behavior. In such a context, a robust screening function is defined as one which would satisfy a Walrasian equilibrium between a 
+lender and his borrowers.
+
+In this paper, we aim at connecting these two strands of literature. We study the robustness of machine learning models when \textit{all} agents rationally adapt to the algorithm's introduction into the economy. We simulate a lender and some borrowers playing a dynamic game. The lender wants to screen out \textit{bad loans}\footnote{Bad loans are usually defined in the literature as loans with a high probability of default, partial default, or delayed payments.}, 
+and the borrowers strategically adapt to the introduction of the screening rule. With these simulations, we study the consequences of either using linear logistic classifiers or deep neural networks to predict \textit{bad loans} when the borrowers' data is endogenously perturbed by a strategic reaction to the algorithm. Next, we use data from the Lending Club\footnote{\url{https://www.lendingclub.com/}}---a peer to peer online lending platform---to estimate the economic and welfare costs of non-robust algorithms. Specifically, we wish to answer the following four strands of questions: 
+
+i) Can a repeated game between the borrowers who adapt to the lender's model and the lender who adapts in turn to the perturbed input converge towards a stable equilibrium? Can this equilibrium be reached when the lender uses a neural network or only when he uses a linear logistic classifier? If there is an equilibrium, under which conditions is the adaptive behavior of the borrowers costly to the lender? 
+
+ii) How does the adaptive behavior of the borrowers impact the perturbed variables' predictive power?\footnote{We define a borrower's variables as some inputs, specific to a borrower which has some predictive power over her probability of being a \textit{bad loan} from the lender's point of view.} Moreover, under which conditions can one variable loose all its predicting power as a consequence of borrowers' rational adaptation? 
+
+iii) In equilibrium, can underspecified models such as a linear logistic classifier outperform overspecified models like deep neural networks? If the true \textit{pre-adaptation}\footnote{We define the pre-adaptation in this paper as the static case, when the borrowers do not strategically adapt to the introduction of the lender's decision function.} relationship between the borrowers' variables to their probability of default is non-linear, then linear logistic classifiers are underspecified, whereas deep neural networks\footnote{Neural networks are universal approximators and can, given enough data, approximate any 
+function~\citep[see, e.g.,][]{hornik1989multilayer,hornik1991approximation}.} are overspecified. While it is clear that overspecified models will outperform underspecified ones when the borrowers do not adapt to the algorithm, the question of what will happen if the borrowers do strategically adapt is non-trivial. 
+ 
+iv) What would be the economic and welfare costs of using non-robust algorithms to automate decisions? 
+
+To answer questions i)-iii), we use simulated data, as the repeated game with logistic regressions or neural networks cannot be trivially reduced to closed-form solutions. To carry out our numerical experiments, we assume that the borrowers' cost of perturbing their variables---that is to say, the cost of adaptive behavior, is a function of the magnitude of perturbation multiplied by the inverse covariance matrix of all borrowers' unperturbed variables.\footnote{By borrower's variables, we mean the input used by the lender's model to make his screening decision. These variables could range from the borrower's history of credit-card usage to his social media footprint, to the text submitted with his loan application.}
+This assumption allows us to model the cost of an increased probability for the borrower to be detected. Indeed, the said probability is likely to be high when the borrowers' perturbed variables are less likely to come from the same distribution as the unperturbed ones. With the same reasoning, this assumption can also be used to model the costs of behaving in a way that would create negative utility for a borrower in order to obtain a higher probability of obtaining a loan. An example of such a trade-off would be a borrower using social media in order to project the image of a good creditor instead of merely enjoying the activity for its own sake \citep{wei2016credit}. 
+Next, we assume that, for each loan application, the lender uses a model to estimate a probability of \textit{bad loan}. A \textit{bad loan} corresponds to a high likelihood of costing some utility to the lender, through default, partial default, or delayed payments. The lender then decides on a specific threshold, which defines what \textit{bad loan} probability is large enough for him to screen out the applicants. Next, the lender receives a positive payoff for every good borrower who received a loan and a negative payoff for every bad one. The lender chooses his model's parameters and decision threshold in order to maximize his profit.
+
+
+We model two distinct adaptive strategies for the borrower, which we name from here onward the \textit{all} and the \textit{improve} perturbation scheme. In the \textit{all} perturbation scheme, borrowers solve a maximization problem in which they trade off the cost of perturbing their inputs versus a lowered \textit{bad loan} predicted probability. In the \textit{improve} perturbation scheme, borrowers solve the same maximization but then compare their new predicted probability to their original one. If the new one allows the borrowers to obtain a previously unobtainable loan, they perturb their variables. Otherwise, they submit their original unperturbed data to the lender. In other words, in the \textit{improve} perturbation scheme, borrowers submit perturbed variables if and only if these perturbed data both solves the maximization problem of the \textit{all} perturbation scheme and move their final classification from \textit{bad} to \textit{good}. Importantly, while in the \textit{all} perturbation scheme, every borrower will perturb it's variables following the same rule, in the \textit{improve} perturbation scheme, some agents end up perturbing their data, while others do not. 
+
+Finally, we define two underlying mappings between the borrower's original variables and their probability of being \textit{bad loans}, a linear and a non-linear one. 
+We investigate two different algorithms, two perturbation schemes, and two underlying mappings, totaling in eight combinations. For each of these, we simulate a repeated game between the lender and his borrowers, where the former first proposes a decision rule, and the latter adapts to it. We repeat these two steps until convergence. 
+
+We tackle question i) by showing that in all eight combinations mentioned, the repeated game does converge to a stable profit for the lender. We show that in the \textit{all} perturbation scheme, the lender can perfectly adapt to the perturbations and get a profit equal to the one he would have collected without adaptive behavior. In the \textit{improve} perturbation scheme, a portion of the lender's profit is definitely lost, i.e., the profit of the lender in equilibrium is lower than in the static case when borrowers do not strategically adapt to his decision function. 
+
+We answer question ii) in a two-fold fashion. First, we derive closed-form solutions for some simplified versions of the repeated game defined above to foster the intuition of the economic mechanism at work. We show that in the specific case where the lender uses an ordinary least square regression, and the borrowers follow the \textit{all} perturbation scheme, the importance of a predicting variable is not impacted by the borrowers' adaptive behavior. The resulting perturbations simply move the variable linearly across all borrowers. To answer the more general cases, we use in a second step again our simulations. We show that a variable's predicting power will drop to zero if and only if the cost of perturbation is exceptionally high, or its original predicting power is extremely low. 
+
+We address iii) by comparing the lender's equilibrium profits in all eighth combinations of parameters described above. When the true underlying mapping is non-linear, and the borrowers follow the \textit{all} perturbation scheme, overspecified models do outperform underspecified ones. However, when borrowers follow the \textit{improve} perturbation scheme, the underspecified model seems to outperform the overspecified one. We attribute this weakness of sophisticated models to the well-documented sensitivity of deep neural networks to adversarial attacks~\citep{szegedy2013intriguing}. Moreover, we provide evidence for this hypothesis by showing (a) that the equilibrium profits in our simulation are noisier with neural networks than with logistic classifiers, and (b) that the way each individual borrower perturbs her input from one round to the next varies significantly more when the lender uses deep neural networks to screen out \textit{bad loans}. We verify that our findings are stable across various neural network architectures by changing the number of layers and the neurons' activation type in our simulations. 
+
+Finally, we tackle iv) by using real data from the Lenders club (TODO: finish here when we have results). 
+
+The questions studied in this paper rely on the assumption that borrowers do adapt to quantitative credit-scoring rules or, more generally, to automate decision-making algorithms. 
+Anecdotal pieces of evidence support this assumption, even before the rise of big data. The proliferation of online pages suggest that \textit{tricks} and behavior changes to increase FICO credit score provides evidence of interest from borrowers to adapt to the quantitative methods.\footnote{
+See e.g.~\url{https://www.myfico.com/credit-education/improve-your-credit-score}, \url{https://bettercreditblog.org/5-amazingly-simple-techniques-to-optimize-your-credit-score}, or \url{https://www.debt.org/credit/improving-your-score}.}
+Nonetheless, big data and improved computing capabilities are likely to increase the importance of this adaptive behavior further. While new data sources and ever-rising computing power allow the lenders to use larger sources of information to estimate probabilities of default, these data can be legally perturbed by the borrowers at both high and low costs. For example, \cite{oskarsdottir2019value} showed how the phone call history of borrowers can be used to improve credit scoring, whereas~\cite{netzer2019words} suggested that textual analysis performed on loan applications could be used to improve default predictions. 
+Phone call habits provide a good example of a predicting variable which can be legally \textit{perturbed} by calling people with a bad credit score less often. Obviously, such behavior would come at a high utility cost.
+Concurrently, the texts in loan applications provide a good example of a variable which can be perturbed at almost zero costs for borrowers.\footnote{\cite{liang2017deep} showed that adversarial attacks, while usually researched in machine vision, are also efficient in the context of natural language processing.}
+
+
+To summarize, we contribute to the current literature in a fourfold fashion. First, we highlight the importance of including rational adaptive behavior in the definition of robustness when dealing with automated financial decisions. This is especially relevant in an economy moving towards more automation and more common usage of big data. Second, we show that variables which may be perturbed by fully rational agents are likely to contain still predicting power as long as perturbation is costly. Third, we show that algorithms that may appear to outperform on a static data set may underperform once the model is implemented because of high sensitivities to adversarial attacks. Fourth, we use real data to quantify the economic and welfare costs of poorly estimating the risks linked to rational adaptive behavior. In all, and to the extent of our knowledge, we are the first to investigate the risks associated with the use of machine learning when the agents creating the data can rationally adapt to the algorithm's introduction into the economy. 
+
+
+The remainder of this paper is organized as follows. In section~\ref{sec:literature} we discuss this paper relationship to previous literature. In section~\ref{sec:model}, we present the dynamic of the repeated games used both on the simulated and real data. In section \ref{sec:data}, we present the simulated and real data. Section \ref{sec:results} discusses the results,
+and Section \ref{sec:Conclusion} concludes. 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Literature}
+\label{sec:literature}
+%%%%%%%%%%%%%%%%%%%%%%%%
+
+This paper is related to three main strands of literature. The first is the quantitative credit-scoring and loan screening literature, which develops and analyses statistical or machine learning techniques to estimate a borrower's credit quality. The second is the economic literature on asymmetric information in the context of lending and banking. The third is the machine learning literature on adversarial attacks, which studies neural networks and other sophisticated models' sensitivity to strategic perturbation of the models' inputs.  
+In the subsections to follow, we describe these three streams in greater detail.
+
+%
+\subsection{Credit scoring and loan screening}
+
+Both academics and as well as practitioners have studied the use of quantitative approaches to estimate credit risk ever since~\cite{durand1941risk} first pointed out that the statistical tools which were introduced in~\cite{fisher1936use} could be used to discriminate between good and bad loans. Earlier work developed the idea of \textit{credit scoring} with the aim of providing quantitative support to human decision-makers~\citep[see, e.g.,][]{rosenberg1994quantitative,hand1997statistical,thomas2000survey}. The usage of credit score rapidly became mainstream in credit applications. They first became popular in the late 1960s with the arrival of credit cards~\citep{thomas2000survey}, but quickly generalized to other areas of finance. For example,~\cite{carleton1969statistical} investigated how credit scoring tools could be used to rate municipal bonds' risks, whereas~\cite{orgler1970credit} showed how credit scoring, estimated with ordinary least square regressions, can be used in the context of commercial loans. 
+The tools used in credit scoring quickly spread over a wide range of quantitative techniques, ranging from linear discriminant and logistic classifiers up to algorithmic approaches that including decision trees and neural networks~\citep[see, e.g.,][]{rosenberg1994quantitative,bastani2016measuring,hand1997statistical,thomas2000survey}. 
+Most of these models proved to be useful tools to assist human decisions; however, they were not immediately considered to be as robust enough to develop fully automated decision processes. 
+Indeed,~\cite{wiginton1980note} concluded the analysis of logistic classifiers and linear discriminants by noting that if \textit{``the logit function performed considerably better than chance, but does not appear to make a significantly high proportion of correct classifications to warrant use for unaided decision-making''}. Similarly, in the late 2000s, comparatively simple techniques were still preferred over more sophisticated models.~\cite{west2000neural}, who investigated the efficiency of neural networks in credit scoring, concluded that linear logistic classifiers were still the most accurate classifier. 
+
+More recently, significant improvements in computational power renewed practitioners' and academics' interest in the use of sophisticated machine learning techniques. \cite{huang2007credit}, for instance, investigated the efficiency of support vector machines for credit-scoring, whereas~\cite{gao2006credit} showed that with a proper training process, deep neural networks can significantly outperform simpler linear models in credit scoring applications. 
+
+The interest for sophisticated methods increased further with easier access to a large quantity of potentially relevant information: big data.\footnote{
+We define big data in this paper as some large data-set ---usually in the order of terabytes---composed of data previously unusable or which were believed to be irrelevant to the financial problem: data about user's social media activities, phone call habits, or texts which could not be quantitatively analyzed before improvements in natural language processing, etc.
+}~\cite{wei2016credit} showed in a theoretical set-up how networks-based observations, as can be obtained from social media's historical data, could be used to improve a lender's predictions of his borrowers' default probability.~\cite{oskarsdottir2019value}~showed empirically how integrating network information about the borrowers' phone calls could be used to significantly improve the machine learning models' ability to classify good and bad credit risks. Similarly,~\cite{netzer2019words} used natural language processing to show that textual information contained in loan applications could be used by a machine to improve credit scoring. 
+
+Big data, combined with significantly improved computational power, finally allowed large companies like Ant Financial\footnote{Formerly Alipay, Ant Financial is an affiliate company of the Alibaba Group.} to fully automate lending decisions~\citep{zhao2017research}. 
+
+We contribute to the credit scoring literature in general, and in particular, to the use of big data and modern algorithms to loan screening by investigating the risks of using sophisticated machine learning model when borrowers can strategically adapt to the introduction of the new model. 
+
+We further contribute to this strand of literature by including concepts from game theory and the partial equilibrium literature. To the best of our knowledge, very few researchers so far attempted to use these concepts in the context of credit scoring.~\cite{bravo2015improving} used game theory to define a third class of credit risk, but did not investigate adaptive behavior and equilibria. To improve their estimation of credit risks, they split \textit{bad} loans into two categories; \textit{can't pay} and \textit{won't pay}. They defined \textit{won't pay} as agents for whom it is optimal to default, even though they could repay the loan.~\cite{wei2016credit}, in their theoretical analysis of social network data in credit scoring, did study an equilibrium in which borrowers rationally react to the lender's decision rule. While this work is related to ours, they focus their analysis on a theoretical equilibrium, while we discuss how different statistical models would behave and perform when facing endogenous input manipulation by the borrowers. 
+
+
+\subsection{Banking and lending with asymmetric information}
+
+Over the past few decades, economist have studied the effect of asymmetric information on lending activities. In the context of banking, the seminal work by~\cite{stiglitz1981credit} discusses how imperfect information can create \textit{credit rationing}. A vast literature has expanded this idea to include, among other things, screening costs in partial equilibrium models~\citep[see, e.g.,][]{de1987too,broecker1990credit,freixas2007interbank}. The bulk of this literature modeled the said costs as an exogenous parameter or a function in a complex model. We are, to the extent of our knowledge, the first to study loan screening in a Walrasian equilibrium. We contribute to this second stream of literature by showing how an equilibrium can arise even when the lender uses a neural network to screen-out bad loans, or when the borrowers follow a non-linear perturbation scheme.
+
+
+\subsection{Machine learning and adversarial learning}
+
+The machine learning literature on adversarial attacks studied how deep neural networks can be fooled by a relatively small modification of the model's inputs. In machine vision, it has been shown that a well-performing neural network classifier could be fooled by strategically modifying a single pixel of a photo~\citep[see, e.g.,][]{su2019one}, while~\cite{liang2017deep} showed that adversarial attacks are equally efficient in natural language processing. 
+
+\cite{szegedy2013intriguing} were the first to report that neural networks were highly sensitive to these kinds of attacks. The authors suggested that this weakness might be explained by the highly non-linear nature neural networks. This view was later challenged and, to the best of our knowledge, no clear consensus on this matter has yet emerged~\citep[see, e.g.,][]{goodfellow2014explaining}.~\cite{szegedy2013intriguing} also noted that the same attacks worked on similar network trained on a different subsample of the same data set. This result strongly implies that the network attacks were \textit{transferable} from one network to another. This \textit{transferability} property of adversarial attacks was later confirmed by several papers~\citep[see, e.g.,][]{goodfellow2014explaining,papernot2017practical}. 
+
+The machine learning literature has split adversarial attacks into multiple categories. Poisoning attacks are defined as malicious attempts to introduce falsified data into the data set that is used to train the model~\citep[see, e.g.,][]{yang2017generative,jagielski2018manipulating}. The attacks more relevant to this paper are the so-called white-box and black-box attacks. Both attacks occurred at inference, i.e., by manipulating the input given to the model when it is queried for a prediction. However, while white-box attacks assume the assailant knows both the machine learning model and its parameters' values, black-box attacks occur when the aggressors only know the model type (i.e., if the model is a neural network or a logistic classifier, etc.). In the context of loan screening, black-box attacks are more realistic as strategically adapting borrowers are not likely to know in detail the algorithm used by the lender. However, a growing body of research has shown that deep neural networks are surprisingly vulnerable to black-boxes adversarial attacks. \cite{tramer2016stealing},~\cite{juuti2019prada}, and~\cite{takemura2020model}, for example, studied extraction attacks in which an adversary obtain a new model whose performance is equivalent to that of a target model by querying it. \cite{fredrikson2015model}, and~\cite{zhang2019secret} studied model inversion attacks in which access to the model is maliciously used to infer information about the training data. 
+
+Various attempts have been made to make deep neural networks robust to adversarial behavior. Perhaps the most intuitive approach was the so-called ``sampled enhancement'', in which the training sample is enhanced by adding adversarial examples to it~\citep[see, e.g.,][]{huang2015learning,tramer2017ensemble, hosseini2017blocking}. In order to make this process efficient, a vast literature has developed computationally efficient ways to create adversarial samples~\citep[see, e.g.,][]{moosavi2016deepfool,kurakin2016adversarial,papernot2016limitations,cisse2017houdini,su2019one}. Various other methods have been suggested to improve the neural networks' resistance to other adversarial attacks including specialized batch normalization~\citep{rozsa2016towards}, input compression~\citep[see, e.g.,][]{dziugaite2016study,gao2017deepcloak}, detection of adversarial sample \citep{xu2017feature}, and pre-processing inputs with a generative adversarial network \citep{kurakin2018adversarial}. While all of these methods have shown promising results, at the time of writing, no method was perceived by the literature as a panacea against adversarial attacks. 
+
+We contribute to this third strand of literature by being the first, to the extent of our knowledge, to link this well-documented sensitivity to adversarial attacks to economic applications where agents can rationally adapt to the algorithm implementation. 
+ 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Model}
+\label{sec:model}
+%%%%%%%%%%%%%%%%%%%%%%%%
+We model a competitive game between a lender and his borrowers. A borrower is defined by the quality of his credit risk (either \textit{good} or \textit{bad})\footnote{We define a \textit{bad} credit-risk as any loan where the lender, on average, lose money.  This can be caused by default, partial default or delayed payments.}
+ and a set of variables that are mapped by some function to a probability of \textit{bad} credit risk. 
+The lender aims at filtering out \textit{bad} borrowers in order to maximize his profits.
+To do so, he screens out borrowers for whom he estimates that the probability of \textit{bad} is above some threshold. The lender has to commit both to a model to estimate the probability of \textit{bad} from the borrowers' variables and the threshold above which he considers the risk to be too high. Both \textit{good} and \textit{bad} borrowers can rationally adapt to the chosen model and threshold by perturbing their variables at a given cost. 
+
+In this section, we define the borrower's and lenders' optimization problems. Next, we will present the borrowers' characteristics before defining the repeated game used to make the lender's algorithm robust to the borrower's strategic perturbations. 
+
+
+\subsection{Lender's Problem}
+We start the exposition of the problem with the lender, who aims at maximizing his profits by screening out \textit{bad} risks. 
+
+Let $\phi(x_i|\tau,\theta)$ be the lender's decision function. $\phi(x_i|\tau,\theta)$ takes as an input the variables of a borrower $i$ and yields back a binary variable equal to 1 if the lender agrees to lend to borrower $i$. This screening function can be split into two parts. In the first part, the probability of \textit{bad} is estimated by a function $f(x_i | \theta)$, where $\theta$ is a set of parameters. In a second step, the lender defines his decision threshold $\tau$. Every borrower with an estimated probability of \textit{bad} higher than $\tau$ is screened out, while all others receive a loan. The function $\phi(x_i)$ is defined as: 
+
+\begin{equation}\label{equ:screening_algo}
+\phi(x_i|\tau,\theta) = \mathbbm{1}_{f(x_i | \theta)<\tau},
+\end{equation}
+where $\mathbbm{1}_{x}$ is a binary variable equal to 1 if the condition $x$ is satisfied, 0 otherwise.
+
+When he estimates the parameters in $\theta$ and choose the threshold $\tau$, the lender observes a set of historical data consisting of $N$ pairs $[x_i;y_i]$, where $y_i$ is a binary variable equal to 1 if the borrower $i$ proved to be a \textit{bad} risk, and 0 otherwise. $x_i$ is a vector of variables of dimension $3$ with some predictive power of $y_i$. In other words, the true probability of being \textit{bad} is defined by $f_{true}(x_i)=p_i+\epsilon$, where $f_{true}(\cdot)$ is the true function mapping the borrowers unperturbed input to its probability of being a \textit{bad} risk. $p_i$ is the true probability that borrower $i$ represents a \textit{bad} risk for the lender, while $\epsilon$ is some uncorrelated random noise. 
+
+A naive lender---that is, a lender who assumes the borrowers would not falsify their input once the function $\psi(\cdot)$ is defined--- would first estimate the set of parameters $\theta$ to best map the borrowers' variables to a probability of default. In this paper, this estimation is done by minimizing the cross-entropy loss~\citep[see, e.g.,][]{goodfellow2014explaining}.
+
+\begin{equation}\label{equ:entropy_loss}
+\hat{\theta} = \underset{\theta}{\arg \min } -\sum_{i=1}^N y_i \log(f(x_i | \theta)) + (1-y_i) \log(1-f(x_i | \theta)).
+\end{equation}
+
+Once the set of parameters $\hat{\theta}$ is estimated, the lender has to define his decision threshold $\tau$. We assume a risk-neutral lender who maximize his expected profits. Therefore, he estimates his optimal $\tau$ as: 
+
+\begin{equation}\label{equ:tau_find}
+\hat{\tau} = \underset{\tau}{\arg \max} \sum_{i=1}^N 
+\mathbbm{1}_{f(x_i | \hat{\theta})<\tau} G -  \mathbbm{1}_{f(x_i | \hat{\theta})<\tau} L,
+\end{equation}
+where $G$ represents the profit made when lending to a \textit{good} borrower, and $L$ the loss occurred when lending a \textit{bad} one. 
+
+
+\subsubsection{Lender's sophistication}
+We want to distinguish between simple models and deep neural networks in order to study their sensitivity to adversarial attacks in this context. To do so, we define two levels of the lender's sophistication. 
+
+We define the lender's sophistication as the complexity of the functional form $f(\cdot | \theta)$ used to approximate the true mapping $f_{true}(\cdot)$. A \textit{simple} lender is defined as using a linear logistic classifier. In this case, $\theta$ represents the comparatively small set of linear weights and the constant term. A \textit{complex} lender uses a neural network, and $\theta$ represents a very large set of weights and constants. 
+
+
+\subsection{The borrower's problem}
+\label{sec:borrowers_problem}
+We define now how and when a borrower strategically adapts to the introduction of the lender's decision function $\phi(\cdot|\theta,\tau)$. First, we define how a borrower with an initial vector of variables $x_i$ finds her optimal perturbed vector $m_i$. Second, we discuss \textit{perturbation schemes} which define the conditions under which a borrower decides to submit her perturbed input $m_i$ or her initial variable vector $x_i$.
+
+\subsubsection{Optimal perturbed variable}
+A borrower observes the lender's function $\phi(\cdot|\theta,\tau)$ and can strategically adapt to it by falsifying her original $x_i$ into a perturbed vector $m_i$. The optimal values of $m_i$ are defined by a trade-off between maximizing the borrower's chances of getting a loan and a cost proportional to the probability of getting caught.That is,
+
+\begin{equation} \label{equ:hui_borrower}
+\min _{m_{i}} 
+\left[
+f(m_{i} | \theta)+\lambda_{i}\left(m_{i}-x_{i}\right)^{\prime} \Lambda^{-1}\left(m_{i}-x_{i}\right)
+\right].
+\end{equation}
+
+Equation \eqref{equ:hui_borrower} represents the minimization problem which the borrower $i$ solves to find her optimal falsified variable vector $m_{i}$. $\lambda_i$ represents the borrower's aversion to risk, while $\Lambda^{-1}$ is the inverse covariance matrix of the full input matrix composed of all individual $x_i$. 
+The first part of equation \eqref{equ:hui_borrower} is the probability estimated by the lender that the borrower $i$ is a \textit{bad} credit risk. 
+The second part of equation \eqref{equ:hui_borrower}, $\lambda_{i}\left(m_{i}-x_{i}\right)^{\prime} \Lambda^{-1}\left(m_{i}-x_{i}\right)$, increases proportionally to the magnitude of falsification $m_{i}-x_{i}$. Furthermore, the inverted covariance $\Lambda^{-1}$ insures that this cost increase is sharper when the final variable vector $m_i$ is less likely to have originated from the same distribution as $x_i$. 
+
+\subsubsection{Perturbation schemes}
+\label{sec:pert_schemes}
+While the borrowers' true benefit of perturbations is discrete---i.e. either getting or no getting access to credit---the costs and benefits modeled in equation \eqref{equ:hui_borrower} are continuous. The benefits of the perturbations are based on the estimated probability of \textit{bad}, $f(x_i | \theta)$, and not on the decision function, $\phi(x_i|\tau, \theta)$. 
+
+To remedy this shortfall, we introduce the concept of \textit{perturbation schemes}. This scheme defines when a borrower decides to submit her optimal perturbed vector $m_i$ or her original unperturbed vector of variables $x_i$. We define two perturbation schemes: \textit{all} and \textit{improve}. 
+
+Under the \textit{all} perturbation scheme, all borrowers simply solve equation \eqref{equ:hui_borrower} and submit the perturbed input $m_i$ to the lender. In this set-up, the perturbation is linear across borrowers, and all of them do perturb their inputs, even when their initial probability of \textit{bad} is as high as 99.9\% or as low as 0.1\% and the decision threshold $\tau$ is set to 50\%.  
+%This simplified scheme serves as an initial analysis before investigating more realistic non-linear perturbation schemes. 
+
+In the \textit{improve} scheme, we assume that the agents only perturb their inputs if it improves their final classification, that is $\phi(m_i)>\phi(x_i)$. This implies that the borrowers' input perturbation is computed in two steps. First, every agent solves equation \eqref{equ:hui_borrower} to find their perturbed variable vector $m_i$. Since the borrowers know $f(\cdot|\theta)$, they can then estimate their probability of default if they report $m_i$ to the lender. 
+If this perturbed probability is below the decision threshold of the lender, they falsify their data and present $m_i$ to the lender's algorithm. 
+If their perturbed estimated probability of default is still above the threshold, they do not cheat and report their true $x_i$ to the lender. 
+Similarly, if a borrower estimated that the \textit{bad} probability was already below the threshold $\tau$ without perturbing her input, she does not take any risk and simply submit the true vector $x_i$ to the lender. 
+In other words, if perturbation allows her to move her classification from \textit{bad} to \textit{good}, a borrower will perturb her input. Else she simply submits her original variable vector $x_i$. This perturbation scheme is the most consistent with our original assumptions that the benefits of perturbations are weighted against a cost of perturbation proportional to the probability of getting detected. Indeed, if the probability of being detected is non-zero for any $m \neq x_i$, adapting to the decision rule, $\phi(\cdot)$ only makes sense if it is counterbalanced by a financial gain. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Simulated data}
+\label{sec:simulated_data}
+%%%%%%%%%%%%%%%%%%%%%%%%
+In our simulations, we assign a set of initial variables $x_i$ to each borrower. We will now discuss the underlying distribution from which $x_i$ is drawn. Then we will present the true functions which map $x_i$ to the probability of \textit{bad} credit risk, as well as the true quality of credit of each simulated borrower. 
+
+\subsubsection{The distribution of the borrowers' variables}
+In order to analyze how different perturbation costs do influence our repeated game---research question (ii), we define two underlying distributions from which to draw the original variables $x_i$: \textit{$\sigma$-homogenous} and \textit{$\sigma$-heterogeneous}. 
+
+In the \textit{$\sigma$-homogenous} set-up, all 3 dimensions of $x_i$ are drawn from a random normal variable with mean 0 and a standard deviation of 1---that is,
+
+\begin{equation}\label{equ:homo_matrices}
+x_i \sim \mathcal{N} \left( 
+\left[\begin{array}{lll}
+0\\
+0\\
+0\\
+\end{array}\right]
+,
+\left[\begin{array}{lll}
+1 & 0 & 0 \\
+0 & 1 & 0 \\
+0 & 0 & 1 \\
+\end{array}\right]
+\right),
+\end{equation}
+
+In the \textit{$\sigma$-heterogeneous} set-up is similar to the homogenous set-up, but the standard deviation of the first variable has been set to 10. 
+
+\begin{equation}\label{equ:hetero_matrices}
+x_i \sim \mathcal{N} \left( 
+\left[\begin{array}{lll}
+0\\
+0\\
+0\\
+\end{array}\right]
+,
+\left[\begin{array}{lll}
+10 & 0 & 0 \\
+0 & 1 & 0 \\
+0 & 0 & 1 \\
+\end{array}\right]
+\right)
+\end{equation}
+
+\subsubsection{The mapping function}
+\label{sec:mapping_function}
+Each one of our simulations is defined by an original function $f_{true}(\cdot)$ which maps the borrowers original unperturbed variable vector $x_i$ to their respective probability of being \textit{bad} loans. 
+
+We explore two different $f_{true}(\cdot)$, a \textit{linear} and a \textit{non-linear} one. In the \textit{linear} case, the true function is defined as 
+
+\begin{equation}
+f_{true}(x_i) = \frac{1}{1 + \exp{-x_i w}},
+\end{equation}
+where $w$ is a vector containing one weight per input. All weights' values are set to 1 for simplicity. 
+
+In the \textit{non-linear} set-up, we introduce a non-linearity to the first and second dimension of $x_i$. Let $x_i^{(d)}$ be the scalar value in the dimension d of borrowers' variable vector $x_i$:
+
+\begin{equation}\label{equ:mapping_lin}
+x_i^{(1')} = max(0,x_i^{(1)})-mean(max(0,x_i^{(1)})),
+\end{equation}
+
+\begin{equation}
+x_i^{(2')}= x_i^{(2)} x_i^{(2)} - mean(x_i^{(2)} x_i^{(2)}),
+\end{equation}
+
+\begin{equation}\label{equ:mapping_non_lin}
+f_{true}(x_1,x_2,x_3) = \frac{1}{1 + 
+\exp{-
+\left(
+x_i^{(1')} + x_i^{(2')} \sum_{d=3}^D x_i^{(d)}
+\right)
+}
+}.
+\end{equation}
+
+When we initialize the simulation (see section \ref{sec:simulation_inilization_process}) with a \textit{linear} mapping, 50\% of the borrowers are, on average, defined as \textit{bad}. We normalization the variable 1 and 2 by their respective average to keep a roughly similar probability of \textit{bad} credits in the \textit{non-linear} set-up. 
+
+\subsubsection{Simulation initialization process}
+\label{sec:simulation_inilization_process}
+In each simulation, the data is generated in three steps. We first randomly draw the borrowers' variables from the distribution $\xi$. Next, we apply the function $f_{true}(x_i)$ to these variables to get, for each borrower, a probability of being a \textit{bad} credit. Finally, we randomly draw a value $u_i$, which is drawn from a $uniform(0,1)$ for each borrower $i$. Each borrower is defined as a \textit{bad} credit risks if and only if $f_{true}(x_i)\leq u_i$ 
+
+
+\subsection{Repeated Game}
+So far, we have defined the borrowers both by, (a) the random distributions from which they are drawn, and (b) the rule governing their strategic behavior. We also defined the lender's strategic behavior. We now turn our attention towards the repeated game played between these two types of agents in our simulations. 
+
+In each round $t$, the lender first updates his decision function $\phi(\cdot|\theta,\tau)$ using a set of $N$ observations $\{x_i^{(t)},y_i\}$ where $x_i^{(t)}$ is a vector of variables and $y_i$ is a binary variable equal to 1 if the borrower was found to represent a \textit{bad} credit risk for the lender. 
+The game starts with the lender who solves equation \eqref{equ:entropy_loss} and \eqref{equ:tau_find} for the unperturbed input set $\{x_i^{(0)},y_i\}$.
+Next, the borrowers observe $\phi(\cdot|\theta,\tau)$ and apply the perturbation scheme to strategically adapt their input to a perturbed vector $x_i^{(1)} = Pert(x_i^{(0)},\hat{\theta}_t, \hat{\tau}_t)$.\footnote{
+In the \textit{all} perturbation scheme defined in section \ref{sec:pert_schemes}, $x_i^{(1)}$ is equal to $m_i$ for all borrowers. However, in the \textit{improve} perturbation scheme, only some borrowers perturb their input to $m_i$, for the others, $x_i^{(1)} = x_i^{(0)}$ holds.
+} 
+
+In the second round, the lender observes $\{x_i^{(1)},y_i\}$ and defines a new decision function $\phi(\cdot|\theta,\tau)$. All borrowers then observe this decision function and adapt their respective inputs $x_i^{(1)}$ to $x_i^{(2)}$ by applying the perturbation scheme. 
+
+The game is repeated until convergence. To define said convergence, we compute the lender's profit in round $t$ with the original variables perturbed $t$ and $t-1$ times---that is, $x_i^{(t-1)}$ and $x_i^{(t)}$. If the difference between these two profits is zero, the lender has no incentive to update his decision function. Since the borrowers were the last to update their perturbations, they have no incentive to redo it either: the game has converged. 
+
+Algorithm  \eqref{algo:repeated_game} formally describes this process. 
+Notice that since the borrowers move last in each round, the lender's profit at the end of the first round represents the profit of a naive lender who does not anticipate the strategic adaptation of his borrowers. 
+
+
+\begin{algorithm}[t!]
+\SetAlgoLined\KwData{$N$ historical pairs $[x_i;y_i]$}
+\KwResult{$\hat{\theta}$,  $\hat{\tau}$}
+initialization\;
+$\hat{\theta}_0 = \underset{\theta}{\arg \min } -\sum_{i=1}^N y_i \log(f(x_i^{(0)} | \theta)) + (1-y_i) \log(1-f(x_i^{(0)} | \theta))$ \;
+$\hat{\tau}_0 = \underset{\tau}{\arg \min } \sum_{i=1}^N 
+\mathbbm{1}_{f(x_i^{(0)} | \hat{\theta}_0)<\hat{\tau}_0} G -  \mathbbm{1}_{f(x_i^{(0)} | \hat{\theta}_0)<\hat{\tau}_0} L$ \;
+$t=1$\;
+$\Delta \pi= \epsilon+1$\;
+\While{$\Delta \pi>\epsilon$}{
+$x_i^{(t)} = Pert(x_i^{(t-1)},\hat{\theta}_t, \hat{\tau}_t)$\;
+$\hat{\theta}_t = \underset{\theta}{\arg \min } -\sum_{i=1}^N y_i \log(f(x_i^{(t)} | \theta)) + (1-y_i) \log(1-f((x_i^{(t)}| \theta))$ \;
+$\hat{\tau}_t = \underset{\tau}{\arg \min } \sum_{i=1}^N 
+\mathbbm{1}_{f(x_i^{(t)} | \hat{\theta}_t)<\tau} G -  \mathbbm{1}_{f(x_i^{(t)} | \hat{\theta}_t)<\tau} L$ \;
+$\pi_{t-1} = \sum_{i=1}^N y_i \log(f(x_i^{(t-1)} | \theta)) + (1-y_i) \log(1-f(x_i^{(t-1)} | \theta))$\;
+$\pi_t = \sum_{i=1}^N y_i \log(f(x_i^{(t)} | \theta)) + (1-y_i) \log(1-f(x_i^{(t)} | \theta))$\;
+$\Delta \pi = \pi_{t-1}-\pi_t$ \;
+$t+1$\;
+}
+$\hat{\theta} = \hat{\theta}_t$\;
+$\hat{\tau} = \hat{\tau}_t$\;
+
+\caption{The above's algorithm present formally the repeated game played between the lender and the borrowers.}
+\label{algo:repeated_game}
+\end{algorithm}
+
+\subsection{Numerical stability}
+We will now present the parameters we use in the simulations as well as the bootstrapping procedure we apply to obtain numerical stability. 
+
+In our numerical experiments, we create a total of $14,000$ borrowers.\footnote{
+We chose this sample size through trial and error. We found that larger samples only marginally increased the precision of the lender's precision while it significantly increased computational cost. One simulation, with 20 game rounds run 20 times for numerical stability, take approximately 72 hours on a machine with 16 CPU.
+} When the lender minimizes equation \eqref{equ:entropy_loss} to find the optimal parameters in $\theta$ he has access to $12,000$ observations. $10,000$ samples are used as a training set, while the remaining $2,000$ observations are used as a validation set. The same $12,000$ simulated borrowers are also used by the lender when he solves equation \eqref{equ:tau_find} to find his optimal threshold of $\tau$. The remaining $2,000$ borrowers are used to compute the out of sample performance of the lender, measured as his profit. This profit is therefore estimated on this subsample, which was not used to optimize the function $\phi(x_i|\tau,\theta)$. 
+
+We run every experiment 20 times. When discussing a numerical result from these experiments, we show the mean values computed across simulations. 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lending club data}
+\label{sec:lending_club_data}
+%%%%%%%%%%%%%%%%%%%%%%%%
+In this section, we briefly describe the US-based peer to peer lending company \textit{Lending Club}.\footnote{\url{https://www.lendingclub.com/}}. Then we describe the data provided by this firm, which we use to answer our fourth research question (see section~\ref{sec:Intro}). 
+
+Lending Club connects borrowers with individual lenders through an online platform. The prospective borrowers have to provide significant amount information to the firm, including a credit score like the FICO score and some personal information such as employment history or number of credit cards owned. The Lending Club uses this data, first to filter out bad loans and then to assign a grade to each accepted loan. This grade, together with the loan's term and some macroeconomic factor, is used to determine the interest rate through some publicly available formula. The Lending Club claims to have ``\textit{[...] internally developed an algorithm which analyzes the performance of borrower members and takes into account FICO score, credit attributes, and other application data [...]}''\footnote{\url{https://www.lendingclub.com/foliofn/rateDetail.action}} to estimate the grade of each borrower.
+
+The loan financing is not done by the Lending Club itself but by other clients of the company. These lenders can use the platform to see the loan applications, including a significant fraction\footnote{\simon{ I will put the real number there, but I need to log in LC, and for that, I need Hui to confirm my machine again, sorry.}} of the information provided by the borrower in their application, as well as the grade estimated by the Lending Club's algorithm. Each lender can then decide to fund part or all of any individual loan application. 
+
+The Lending Club has made available a large quantity of historical data. 
+These include all loans funded by the platform from 2007 to 2018. Table \ref{table:nb_loan} shows the number of loans in the dataset year per year.  In total, the data contain 2,260,668 individual loans, and more than 98\% of them were issued between 2012 and 2018. For each loan, the Lending Club provided the information available to the lender on the website---that is, some but not all of the borrowers' information used to define the loan grade, the amount demanded by the borrower, the loan term, and the grade defined by the proprietary algorithm. In addition, the data contain information about each loan performance---that is, the interest paid to date, the principal repaid to date, an indicator of default, and an indicator that the loan was charged off. This last variable indicated that the loan was unlikely to get repaid and that the Lending Club planned to sell the loan to other companies for a fraction of its face value. If the Lending Club already did sell the loan, they provided the amount raised, as well as the fraction of this resale amount taken as a fee by the Lending Club. 
+
+
+Unfortunately, the Lending Club only released partial data about the loan application they rejected. In consequence, we focus our analysis on the grading of accepted loans. The firm's algorithm automatically assigns one grade, from A (best) to G (worst). Figures \ref{fig:grade_years_36} and \ref{fig:grade_years_60} show the fraction of new loans assigned to each grade year per year.\footnote{We only display values for 2012, and above as the years 2007 to 2011 together contain only 21,721 individual loans, which translate into 1.88\% of the total sample size.} 
+In these figures, we can see that the grade composition is not stable through time. More importantly, the fraction of loans with good grades seems to be increasing with time. Increased quality of the borrowers could cause this fact, but it could also be caused by a change in behavior of the borrowers who strategically adapt to the Lending Club classification algorithm. To distinguish between these two hypotheses, we need to see if the general quality of high-grade loans is diminishing. Unfortunately, the quality cannot be measured with certainty before the end of the loan's term. Since the loans are repaid either in 3 or in 5 years, we cannot measure the quality of the loan in the last three years of our data set. Therefore, the trend displayed in figures \ref{fig:grade_years_36} and \ref{fig:grade_years_60} can only be presented as anecdotal evidence that the borrowers may have strategically adapted to the lending club's algorithm.
+
+
+\begin{table}[t!]
+   \centering
+\input{LC/nb_loan.tex}
+   \caption{The above's table display the number of new loans issued by the Lending Club from 2007 to 2018.
+}
+\label{table:nb_loan}
+\end{table}
+
+
+\begin{figure*}[t!]
+    \centering
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{LC/grade_years_36}
+        \caption{3-year loans}
+        \label{fig:grade_years_36}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{LC/grade_years_60}
+            \caption{5-year loans}
+        \label{fig:grade_years_60}
+    \end{subfigure}
+    \caption{
+    In the above's figures, we display the percentage of new loans assigned to each grade year by year.
+}
+\end{figure*}
+
+Table \ref{table:gr_stats} displays, performance indicators for each grade---that is, the percentage of loans flagged as default, the percentage of charged-off loans, the mean return on investment, the volatility of return on investment, and the mean return divided by the volatility of return.\footnote{For each loan, we only have information about the total amount lent to the borrowers and the total dollar amount paid back by the borrower. To compute the return, we make the simplifying assumption that all payments to the borrower are made when the loan is issued, and all payments made by the borrower occurs at the end of the loan's term. Therefore, all Lending Club returns computed in this paper underestimate the true return for a prospective lender.} These performance measures have been computed on the subsample of \textit{completed loan}---that is, loans that were either flagged by the lending club as \textit{fully paid} or \textit{defaulted} and loans older than their term. In this table, we see that the percentage of defaulted and charged-off loans increased as the quality of the grade decrease. The only exception is graded G. the extremely small number of loans can explain this anomaly with this grade, i.e. only 0.5\% of the total sample. The mean return is lower for higher grades, but the standard deviation of return is also significantly lower. The ratio of mean return over the volatility of return varies significantly from high grades to low grades. 
+
+Together, these descriptive statistics show that the proprietary algorithm of the Lending Club does classify loans into meaningful categories as risk indicators are higher for lower grades. 
+
+\begin{table}[t!]
+   \centering
+\input{LC/gr_stats.tex}
+   \caption{The above's table display, for each grade, the percentage of loans which defaulted, the percentage of loans which were charged off. Similarly, for each grade, we display the average return on investment $\bar{r}$, the volatility of return $\sigma_r$, and the ratio for the two. 
+}
+\label{table:gr_stats}
+\end{table}
+
+TODO: Expand this section when LC analysis is complete, and it becomes clearer what we need to introduce. Also, we may want to discuss moving the stat about changing grade into the intro as a motivation of our approach. 
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Results}
+\label{sec:results}
+%%%%%%%%%%%%%%%%%%%%%%%%
+In section \ref{sec:model}, we presented the various theoretical set-ups for our simulations. We laid out two sophistication degrees for the lender, two underlying distributions for the borrowers' variables, two functions mapping these variables to a probability of \textit{bad} risk, and two perturbation schemes. In the following subsections, we use these simulations and some analytical solutions to answer our first three research questions defined in section \ref{sec:Intro}. 
+%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Robust algorithm}
+\label{sec:robust_algorithm}
+%%%%%%%%%%%%%%%%%%%%%%%%
+
+We start by answering question i). In the following subsection, we investigate whether or not the repeated game presented in algorithm \eqref{algo:repeated_game_with_cheat_detection} converges to a stable solution in all the eight simulation setups defined in section \ref{sec:model}. 
+
+We define a stable solution as one where neither the lender nor his borrowers, would wish to change their respective strategies. At the end of each round, the borrowers are the last to update their perturbations. Therefore, if at the start of the next round, the lender has no incentive to update his strategy, the game has converged to an equilibrium. 
+The lender has no incentive to update his strategy when his profit with the decision function $\phi(x_i^{(t)}|\tau^{(t)},\theta^{(t)})$ is equal to his profit with the corresponding decision function $\phi(x_i^{(t)}|\tau^{(t-1)},\theta^{(t-1)})$. In other words, if the lender does not improve his profit by updating his decision function, the game has converged. 
+
+We first investigate the cases where the true mapping of the unperturbed input to the \textit{bad} probability is linear. The underlying distribution of the input $x_i$ is homogeneous and follows equation \eqref{equ:homo_matrices}. The lender uses a linear logistic classifier to estimate the probability of \textit{bad}.
+
+In figures \ref{fig:curv_allSimple} and \ref{fig:curv_ImproveSimple}, we display the profits of the lender throughout the first five rounds of the repeated game. The x-axis shows the decision threshold $\tau$ in percentage points---that is, $x=30$ means that the lender will give a loan to every borrower with an estimated probability of \textit{bad} below $30\%$. On the y-axis, we show the average profit per borrower demanding a loan defined as
+
+\begin{equation}\label{equ:pi_bar} 
+\bar{\pi}(x_i|\theta, \tau) =  \frac{1}{N} \sum_{i=1}^N 
+\mathbbm{1}_{f(x_i | \theta)<\tau} G -  \mathbbm{1}_{f(x_i | \theta)<\tau} L.
+\end{equation} 
+
+Each subplot shows a different round $t$ of the repeated game. For each $t$, the two lines represent the profit curves of the lender when the borrowers' data was perturbed $t-1$ times and $t$ times, respectively. 
+
+We start the discussion of the results for the cases when the borrowers follow the \textit{all} perturbation scheme, i.e. figure \ref{fig:curv_allSimple}. 
+When we look at the evolution of the two curves throughout the rounds of the game, we see convergence. Indeed, the lender's profit curve is only marginally modified by updating his decision function in round 5. In this context, this is not the case in the first round. Furthermore, we can see that in the last round displayed, and both profits curves are equivalent to the one in the first round with unperturbed data. Therefore, in this set-up, the repeated game allows the lender to fully undo the borrowers' perturbations. 
+
+Note that in the first figure---that is, the first round of the repeated game, we see that the lender could obtain a similar profit by recalibrating his logistic model's parameters $\theta$ or simply by re-estimating the decision threshold $\tau$ as defined in equation \eqref{equ:tau_find}. This is in line with the intuition conveyed by the closed-form in section \ref{sec:close_form_introduction}. 
+
+The second set of figures shown in figure \ref{fig:curv_ImproveSimple} displays the same profit curves through the repeated game when the borrowers follow the \textit{improve} perturbation scheme. We can see that the repeated game converges to a robust equilibrium---that is, neither the lender nor the borrowers wish to adapt their strategy. However, some information is irrevocably lost for the lender. This loss in information can be seen in two ways. First, by the fact that the original best mean profit was above 0.25 and the equilibrium one is below. Second, by the flatness of the curves close to the decision threshold. This flatness shows that some aggregation of information through the perturbation scheme has significantly reduced the lender's capacity to distinguish between borrowers whose probability of \textit{bad} is close to $\tau$. 
+
+
+
+\begin{figure*}[ht!]
+    \centering
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{homo/curv_head_Homo|AllSimple}
+        \caption{\textit{All} perturbation scheme}
+        \label{fig:curv_allSimple}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{homo/curv_head_Homo|ImproveSimple}
+            \caption{\textit{Improve} perturbation scheme}
+        \label{fig:curv_ImproveSimple}
+    \end{subfigure}
+    \caption{In the aboves' figures, we show one figure for each of the first five rounds of the repeated game.  
+    The figure at round $t$ shows the profit curves for the lender with the borrowers' data perturbed $t$ time and $t+1$ times, i.e $\bar{\pi}(x_i^{(t)})$ and $\bar{\pi}(x_i^{(t+1)})$. The x-axis shows the decision threshold in percentage points. The y-axis displays the average profit per borrower demanding a loan as defined in equation \eqref{equ:pi_bar}.
+    }
+\end{figure*}
+
+
+\clearpage
+
+Next, we study the convergence of the repeated game across multiple simulation's set-ups by computing the lender's gain when he updates his decision function's parameters $\theta$ and $\tau$ at the end of the round.
+
+\begin{equation}\label{equ:delta_bar_pi_def}
+\Delta \bar{\pi} = \bar{\pi}(x_i^{(t+1)}|\theta^{(t+1)}, \tau^{(t+1)})-\bar{\pi}(x_i^{(t+1)}|\theta^{(t)}, \tau^{(t)})
+\end{equation}
+
+Figures \ref{fig:conv_homo} and \ref{fig:conv_nl} show $\Delta \bar{\pi}$ for each round of the repeated game. Figure \ref{fig:conv_homo} shows the results in the simulations where the true mapping function $f_{true}(\cdot)$ is linear, whereas figure \ref{fig:conv_nl} shows the same results when the true mapping is non-linear. In both figures, the four lines show $\Delta \bar{\pi}$ when the borrowers follow the \textit{all} or \textit{improve} perturbation scheme, and when the lender uses a neural network or a linear logistic classifier,respectively. 
+
+In all combinations, we see that the lender's gain when he updates his decision function drops significantly after the first few rounds. $\Delta \bar{\pi}$ also converge to stable numbers---that is, a small variation in $\Delta \bar{\pi}$ from one round of the repeated game to the next. However, this gain does not converge towards zero in all cases. 
+
+Finally, we observe that the gain to update the decision function's parameters  $\tau$ and $\theta$ is bigger when the lender uses a neural network to estimate $f_{true}(\cdot)$ than when he uses a linear logistic classifier. This effect appears to be more pronounced when $f_{true}(\cdot)$ is itself non-linear. This result suggests that the neural networks' sensitivity to adversarial attacks, as defined in section \ref{sec:literature} allows strategic borrowers too better fool the lender's decision function when it relies on a neural network. We elaborate on this hypothesis in section \ref{sec:over_under_specification}. 
+
+
+\begin{figure*}[t!]
+    \centering
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{convergence/homo_conv}
+        \caption{Linear mapping of the borrowers' variables to their probability of \textit{bad}.}
+        \label{fig:conv_homo}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{convergence/nl_conv}
+            \caption{Non-linear mapping of the borrowers' variables to their probability of \textit{bad}}
+        \label{fig:conv_nl}
+    \end{subfigure}
+    \caption{In the two figures show the convergence of the repeated game measured as profit gained by the lender if he adapted his decision profits at the end of a round, i.e. $\Delta \bar{\pi}$. Each line shows this convergence for a different level of sophistication of the lender (logistic classifier or neural network) and for a different perturbation scheme (\textit{all}, and \textit{improve}).
+    }
+\end{figure*}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{The Predicting power of variables}
+\label{sec:close_form_introduction}
+%%%%%%%%%%%%%%%%%%%%%%%%
+In this section, we answer our second research question---that is, how does the adaptive behavior of the borrowers impact their variables’ predictive power? And, under which conditions can one variable lose all its predicting power as a consequence of the borrowers' rational adaptation?
+
+We start this analysis with some closed-form solutions for a simplified version of the repeated game. In particular, we investigate the simple case when the lender's model $f(x_i|\theta)$ is an ordinary least square regression. The lender does not assign to the borrower a probability of \textit{bad}, but rather an inverse credit-scored defined in $\mathbb{R}$. The borrower consider a low credit score desirable and finds his optimal perturbation by solving equation \ref{equ:hui_borrower}. 
+
+In the case where $x_i$ is a scalar, the function $f(x_i|\theta)$ becomes: 
+
+\begin{equation}
+f(x_i|\theta) = \alpha + \beta x_i,
+\end{equation}
+
+\begin{equation}
+\alpha = \bar{y}-\beta \bar{x},
+\end{equation}
+
+\begin{equation}
+\beta=\frac{\sum_{i=1}^{n}\left(x_{i}-\bar{x}\right)\left(y_{i}-\bar{y}\right)}{\sum_{i=1}^{n}\left(x_{i}-\bar{x}\right)^{2}},
+\end{equation}
+where $\bar{\cdot}$ denotes the sample mean. Let $c_i=m_i-x_i$ be a measure of the perturbation size. We modify equation \eqref{equ:hui_borrower} to write the borrowers' problem as
+
+\begin{equation}
+c_i = \underset{c_i}{\arg \min } \left( \alpha + \beta(x_i+c_i)+\lambda_i c_i^2 \Lambda^{-1} \right).
+\end{equation}
+
+Since the input is one-dimensional, both $\Lambda$ and $c_i$ are scalars. Solving the first-order condition for $c_i$ yields,
+
+\begin{equation}
+c_i = \frac{1}{2 \lambda_i}\beta \Lambda.
+\end{equation} 
+
+Net, we define $\alpha_2$ and $\beta_2$ as the updated coefficient estimated on the perturbed sample $m_i = x_i+c_i$ $\forall$ $i$:  
+
+\begin{equation}
+\beta_2=\frac{\sum_{i=1}^{n}\left(x_{i}+x_i-(\bar{x}+\bar{c})\right)\left(y_{i}-\bar{y}\right)}
+{\sum_{i=1}^{n}\left(x_{i}+c_i-(\bar{x}+\bar{c})\right)^{2}},
+\end{equation}
+
+\begin{equation}
+\alpha_2 = \bar{y}-\beta (\bar{x}-\bar{c}).
+\end{equation}
+
+In the special case where $\lambda_i=\lambda$ $\forall$ $i$ it is obvious that $\bar{c} = c_i$ and $\beta_2=\beta$. To convey the  intuition, we look now at some specific parameters' values. If $\beta>0$, $\lambda > 0$, then it follows that $\alpha_2>\alpha$. Furthermore $\frac{\partial}{\partial \Lambda}(\alpha_2-\alpha)>0$. Which means that robustness in this case is achived by adjusting the constant term $\alpha$ to counter the perturbation. This adjustment is bigger when we the cost of perturbation is low. 
+
+A few critical ideas can be extracted from this simple case. First, we see that the optimal perturbation depends on $\beta$. This means that there is a trivial solution if and only if $\beta$ does not change when the lender changes his model. It follows that the value of $\beta$ in equilibrium cannot be trivially deduced when the borrowers follow the \textit{improve} perturbation scheme. Indeed, under this scheme, $c_i=0$ if the perturbation does not lead to an improved classification. 
+
+Second, we have seen that in this simple set-up, robustness is achieved through an update of the constant term $\alpha$. As every borrower perturb his variable systemically, the lender can update his decision algorithm by merely moving the decision threshold $\tau$ to correct for this perturbation. It follows that, in this specific case, the predictive power of the borrowers' variable is unaffected by the strategic perturbations.
+
+In the appendix \ref{appendix:ols_2_dim}, we provide an extension of this closed-form analysis to two dimensions. We show that under the \textit{all} perturbation scheme, even when the two variables of the borrowers have different cost of perturbations, robustness is still achieved by updating only the constant term $\alpha$. In other words, in this simplified set-up, the strategic adaptation of the borrowers does not impact the predictive power of individual variables. 
+
+\subsubsection{Linear logisitc classifier, homogoneous perturbation}
+Next, we look at the linear logistic classifier. With a one-dimensional input, the model of the lenders is defined as,
+
+\begin{equation}\label{equ:logit_1D_function}
+f(x_i) = \frac{1}{1+\exp{ \left[ -(\alpha + \beta x_i) \right ] }}.
+\end{equation}
+
+Compared to the previous subsection, this set-up is closer to the problem we wish to tackle as the lender's decision function is reduced to a probability of default instead of some continuous score. 
+
+To the extent of our knowledge, this model cannot be solved in closed form and therefore needs to be fitted through some optimization procedure. A common approach is to maximize the likelihood defined as 
+
+\begin{equation} \label{equ:proof_1d_logit_likelihood}
+L_{\alpha, \beta} = 
+\prod_{i=1}^n f\left(x_{i}\right)^{y_{i}}\left(1-f\left(x_{i}\right)\right)^{\left(1-y_{i}\right)},
+\end{equation}
+where $y_i$ is a binary variable as in the simulations presented in section \ref{sec:model}.  As in the case of the ordinary least squares, we define $c_i=m_i-x_i$ as the amount of perturbation. We can then write the borrower's problem as
+
+\begin{equation}\label{equ:ols_1_find_c}
+c_i = \underset{c_i}{\arg \min } \left( \frac{1}{1+\exp{ \left[ -(\alpha + \beta (x_i+c_i)) \right ] }} +\lambda_i c_i^2 \Lambda^{-1} \right).
+\end{equation}
+
+The first order condition of equation \eqref{equ:ols_1_find_c} yields
+
+\begin{equation} \label{equ:proof_1d_borrower_foc}
+\beta \frac{1}{2+\exp{ \left[ -(\alpha + \beta (x_i+c_i)) \right ] } +\exp{ \left[ (\alpha + \beta (x_i+c_i)) \right ] } }  + 2 \lambda_i c_i \Lambda ^{-1} = 0.
+\end{equation}
+
+The robust parameters $\alpha_r$ and $\beta_r$ are obtained through the maximization of the likelihood under the perturbed input $m_i$: 
+
+\begin{equation} \label{equ:proof_1d_logit_likelihood_pert}
+L_{\alpha_r, \beta_r} = 
+\prod_{i=1}^n f\left(x_{i}+c_i\right)^{y_{i}}\left(1-f\left(x_{i}+c_i\right)\right)^{\left(1-y_{i}\right)}.
+\end{equation}
+
+An equilibrium in the repeated game is obtained if, for a given set of $\alpha, \beta, c_i$, both equations \eqref{equ:proof_1d_borrower_foc} and \eqref{equ:proof_1d_logit_likelihood_pert} are satisfied. 
+
+This example illustrates the necessity of numerical simulations to answer our research questions i), ii) and iii). Even in the simplest case, with only one dimension and a model in which the variables are still aggregated linearly, the non-linearity introduced by the logistic decision function is sufficient to make the problem non-trivial. 
+
+To analyze the effect of perturbations on individual variables0 predicting power, we restrict our analysis to simulations' setups with linear data and a non-sophisticated lender---that is, a lender who uses linear logistic classifier. This latter restriction allows us to easily display the evolution of all the models' parameters throughout subsequent game rounds. Indeed, with $x_i$ being a vector of dimensions 3, the linear logistic classifier only has four parameters ---that is, three $\beta$, and one constant $\alpha$, whereas while a neural network with three layers of 64, 32, and 16 neurons respectively has  $2,881$ parameters. Similarly, restricting our analysis to the simulations where the true mapping is non-linear allows us to isolate the effects of perturbations and perturbations costs. 
+
+We start by looking at the \textit{$sigma$-homogenous} case, where the individual variables in the vector $x_i$ are drawn from similar normal distributions as defined in equation \eqref{equ:homo_matrices}. Figures \ref{fig:W_AllSimple} and \ref{fig:W_ImproveSimple} show the values of the three $\beta$-coefficients for each round of the game. Figure \ref{fig:W_AllSimple} shows these numbers when the borrowers follow the \textit{all} perturbation scheme, while figure \ref{fig:W_ImproveSimple} shows the same coefficients' values when the borrowers follow the \textit{improve} perturbation scheme. 
+
+In both figures \ref{fig:W_AllSimple} and \ref{fig:W_ImproveSimple}, we see that the models' parameters slightly changes at the beginning of the game and then appear to stay at a relatively stable value once the game has converged. This convergence appears to be more stable under the \textit{all} perturbation scheme than under the \textit{improve} one. 
+The $\beta$ seem to lose a small amount of predictive power due to the borrowers' perturbations as the absolute values of the $\beta$-coefficient is smaller at the end of the repeated game than at its start. 
+Figures \ref{fig:a_AllSimple} and \ref{fig:a_ImproveSimple} show the value of the constant term $\alpha$ throughout the rounds of the games.
+Under both the \textit{all} and the \textit{improve} perturbation scheme, the constant term $\alpha$ is moved from its original value of zero to a significantly higher value as the game converges to an equilibrium. This result is in line with the intuition conveyed by our closed-form analysis when the lender uses an ordinary least squares model. 
+
+
+\begin{figure*}[t!]
+    \centering
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{homo/W_Homo|AllSimple}
+        \caption{\textit{All} perturbation scheme}
+        \label{fig:W_AllSimple}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{homo/W_Homo|ImproveSimple}
+            \caption{\textit{Improve} perturbation}
+        \label{fig:W_ImproveSimple}
+    \end{subfigure}
+    \caption{The figure above show the values of the linear logistic classifier's $\beta$-coefficients for each the round of the repeated game.}
+\end{figure*}
+
+
+
+\begin{figure*}[t!]
+    \centering
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{homo/a_Homo|AllSimple}
+        \caption{\textit{All} perturbation scheme}
+        \label{fig:a_AllSimple}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{homo/a_Homo|ImproveSimple}
+            \caption{\textit{Improve} perturbation}
+        \label{fig:a_ImproveSimple}
+    \end{subfigure}
+    \caption{The figures above show the values of the linear logistic classifier's coefficient $\alpha$ through the rounds of the repeated game.}
+\end{figure*}
+
+
+
+\subsubsection{Linear logistic classifier, heterogeneous perturbation}
+We continue our analysis by looking at simulations under the \textit{$\sigma$-heterogeneous} mapping. Under this mapping, the underlying distribution of the variables in $x_i$ is defined in equation \eqref{equ:hetero_matrices}. The first dimension of the vectors $x_i$ is drawn from a normal$\sim\mathcal{N}(0,10)$ whereas the other two dimensions are drawn from normals$\sim\mathcal{N}(0,1)$.
+
+Equation \eqref{equ:hui_borrower} dictates that the perturbation cost of a single variable is proportional to the inverse covariance matrix of the original inputs. Therefore, in this simulation, the perturbation cost of the first variable is significantly lower than the other two.
+
+Figures \ref{fig:mean_pertAllSimpleHETERO} and \ref{fig:mean_pertImproveSimpleHETERO} show the mean absolute perturbation defined as $|x_i^{(d)}- m_i^{(d)}|$ for each round of the repeated game.\footnote{Note that we analyze each dimension of the vector $x_i$. The upper script $d$ in $x_i^{(d)}$ indicates the variables dimension and not the round of the repeated game.}
+The significantly higher mean absolute perturbation of the first variable shows that the lower cost of perturbation did lead to stronger perturbations by the borrowers. This effect appears both under the \textit{all} and \textit{improve} perturbation scheme. 
+
+Figures \ref{fig:high_std_beta_all} and \ref{fig:high_std_beta_improve} show the corresponding $\beta$ for each round of the repeated game. Similarly, figures \ref{fig:high_std_alpha_all} and \ref{fig:high_std_alpha_improve} show the corresponding $\alpha$. Somewhat surprisingly, we observe that the importance of the first variable does not decrease more than the other two variables, even though the perturbations are significantly higher for this variable. The reason we observe such behavior is the following: Remember that the cost of perturbing a variable is modified here by changing the variable standard deviation but keeping the true function mapping the vector $x_i$ unchanged. In a classification problem, all things being equal, the variable with the highest standard deviation has the strongest predictive power.\footnote{
+We illustrate this idea through a trivial numerical example with a logistic classifier with a single input as defined in equation \eqref{equ:logit_1D_function}. Let's assume $\alpha=0$ and $\beta=1$. We now assume two discrete distributions for the scalar input $x_i$--that is low-$\sigma$ and high-$\sigma$. Under the low-$\sigma$ distribution, $x_i$ can be equal to 1, or -1 with equal probabilities. Under the high-$\sigma$ distribution, $x_i$ can be equal to 2, or -2 with equal probability. It is obvious to see that both these distributions have similar mean but high-$\sigma$ as a higher standard deviation. Under the low-$\sigma$ distribution, the logit function $f(x_i)$ can yield two values,     0.73 or 0.27. Under the high-$\sigma$ distribution, the corresponding predicted probabilities become 0.88 and 0.12. This simple case illustrates how in classification problems when keeping everything else equal, increasing the standard deviation of a variable increases its predictive power.
+}
+
+In this simulation's setup, the increased standard deviation increases the average absolute perturbation of the first variable's and its predictive power. These two effects cancel each other out, and the variable's predictive power is unaffected.
+
+
+
+\begin{figure*}[t!]
+    \centering
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{high_loss/mean_pertHighStd|AllSimple}
+        \caption{\textit{All} perturbation scheme}
+        \label{fig:mean_pertAllSimpleHETERO}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{high_loss/mean_pertHighStd|ImproveSimple}
+            \caption{\textit{Improve} perturbation}
+        \label{fig:mean_pertImproveSimpleHETERO}
+    \end{subfigure}
+    \caption{These figures show the mean perturbation of each input dimension $d$ measured as $|x_i^{(d)}- m_i^{(d)}|$. The distribution of the variables in $x_i$ is heterogenous. The first variable $x_0$ has a standard deviation of 10, while the others have a standard deviation of 1.}
+\end{figure*}
+
+\begin{figure*}[t!]
+    \centering
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{high_loss/W_HighStd|AllSimple}
+        \caption{\textit{All} perturbation scheme}
+        \label{fig:high_std_beta_all}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{high_loss/W_HighStd|ImproveSimple}
+            \caption{\textit{Improve} perturbation}
+        \label{fig:high_std_beta_improve}
+    \end{subfigure}
+    \caption{These figures show the values of the linear logistic classifier's coefficients $\beta$ for each round of the repeated game. The variable are drawn from the same distributions as in figures \ref{fig:mean_pertAllSimpleHETERO} and \ref{fig:mean_pertImproveSimpleHETERO}.}
+\end{figure*}
+
+\begin{figure*}[t!]
+    \centering
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{high_loss/a_HighStd|AllSimple}
+        \caption{\textit{All} perturbation scheme}
+        \label{fig:high_std_alpha_all}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{high_loss/a_HighStd|ImproveSimple}
+            \caption{\textit{Improve} perturbation}
+        \label{fig:high_std_alpha_improve}
+    \end{subfigure}
+    \caption{These figures show the values of the linear logistic classifier's coefficient $\alpha$ for each round of the repeated game. The variable are drawn from the same distributions as in figures \ref{fig:mean_pertAllSimpleHETERO} and \ref{fig:mean_pertImproveSimpleHETERO}.}
+\end{figure*}
+
+To confirm this theory, we run another set of simulations where the standard deviation is kept constant for all three variables, but the cost of perturbation is modified to correspond to the previous simulation. In other words, all three variables are drawn from $\mathcal{N}(0,1)$ but the covariance matrix used in equation \eqref{equ:hui_borrower} to find optimal perturbations corresponds to the one displayed in equation \eqref{equ:hetero_matrices}. This allows us to isolate the effect of cheaper perturbation costs from the effect of high a standard deviation.
+
+In figures \ref{fig:mean_pertAllSimpleHIGH_LOSS} and \ref{fig:mean_pertImproveSimpleHIGH_LOSS} we show, as in figures \ref{fig:mean_pertAllSimpleHETERO} and \ref{fig:mean_pertImproveSimpleHETERO}, the mean absolute perturbation per variable . As was the cases in these first figures, we can see that the mean perturbation is significantly higher for the first variables under both the \textit{all} and \textit{improve} perturbation scheme. 
+
+In figures \ref{fig:high_loss_beta_ALL} and \ref{fig:high_loss_alpha_IMPROVE}, we display the logistic classifier's parameters $\beta$ for each round of the repeated game. Unlike the results displayed in figures \ref{fig:high_std_beta_all} and \ref{fig:high_std_alpha_improve}, when the game converged, the absolute value of $\beta_1$ is significantly lower than the ones of $\beta_2$ and $\beta_3$. This result is significantly stronger under the \textit{improve} than under the \textit{all} perturbation scheme. 
+
+These simulations delivered the following observation: (a) The importance of a predicting power can be diminished by a relatively lower cost of perturbation. (b) If this relatively lower cost is obtained by a higher standard deviation, then the effect is canceled out by a relatively stronger predictive power. This stronger predictive power is obtained because, in a classification problem, everything being equal, a variable with a higher standard deviation is a better predictor than one with a lower standard deviation. (c) While a significant lower cost of perturbation does diminish the predictive power of a variable, it does not drag it down to zero. Under the \textit{all} perturbation scheme, in the last simulation, the cost of perturbing the first variable by one unit was 0.0001, while the cost of perturbing the other variables was 1.\footnote{The cost is directly proportional to the inverse covariance matrix. Since the variable are uncorrelated, this translates into $1/\sigma^2$ per unit of perturbation.}
+This huge difference in perturbation costs translates into a relatively small difference in optimal $\beta$. $\beta_1$ converges to -0.7, whereas $\beta_2$ and $\beta_3$ converge to -0.85, and  $\beta_1/\beta_2$ yields 0.88. The same ratio obtained by dividing the low perturbation cost by the high perturbation cost yields 0.0001. This significant difference suggests that only a perturbation cost close to zero, or a relatively low original predictive power would yield the perturbation process to completely remove the variable predictive power. 
+
+This last point (c) is especially relevant given the recent interest in new types of data to construct a credit score. For example,  \cite{oskarsdottir2019value}, for instance, showed that the phone call history of borrowers could be used to help predict default probabilities, while \cite{netzer2019words} showed how natural language processing could allow a lender to use the texts written by the borrowers in loan screening applications. While it is clear that phone call habits can be strategically changed by potential borrowers, it is also clear that any such change would come with a high utility cost for the borrower. Our analysis suggests that while some robustness method should be applied, the phone call history of the borrowers is unlikely to lose all predictive power once the borrower adapts to the decision rules' introduction. 
+On the other hand, it could be argued that a borrower can strategically change his essay written to obtain a loan at a cost close to zero. Therefore, such a data source may lose all its predictive power once the borrowers adapted to the new decision function of the lender.  
+
+
+
+
+\begin{figure*}[t!]
+    \centering
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{high_loss/mean_pertHighLoss10|AllSimple}
+        \caption{\textit{All} perturbation scheme}
+        \label{fig:mean_pertAllSimpleHIGH_LOSS}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{high_loss/mean_pertHighLoss10|ImproveSimple}
+            \caption{\textit{Improve} perturbation}
+        \label{fig:mean_pertImproveSimpleHIGH_LOSS}
+    \end{subfigure}
+    \caption{These figures displays the mean perturbation input per input measured as $|x_i^{(d)}- m_i^{(d)}|$. The distribution of the variables in $x_i$ is heterogenous. All three variables have similar standard deviation but the covariance matrix used in equation \eqref{equ:hui_borrower} corresponds to the one displayed in equation \eqref{equ:hetero_matrices}.
+}
+\end{figure*}
+
+\begin{figure*}[t!]
+    \centering
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{high_loss/W_HighLoss10|AllSimple}
+        \caption{\textit{All} perturbation scheme}
+        \label{fig:high_loss_beta_ALL}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{high_loss/W_HighLoss10|ImproveSimple}
+            \caption{\textit{Improve} perturbation}
+        \label{fig:high_loss_beta_IMPROVE}
+    \end{subfigure}
+    \caption{These figures shows the values of the logistic classifier's $\beta$ coefficients accross the rounds of the repeated game. The simulations parameters are the same as those used to produce figures \ref{fig:mean_pertAllSimpleHIGH_LOSS} and \ref{fig:mean_pertImproveSimpleHIGH_LOSS}.}
+\end{figure*}
+
+\begin{figure*}[t!]
+    \centering
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{high_loss/a_HighLoss10|AllSimple}
+        \caption{\textit{All} perturbation scheme}
+        \label{fig:high_loss_alpha_ALL}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{high_loss/a_HighLoss10|ImproveSimple}
+            \caption{\textit{Improve} perturbation}
+        \label{fig:high_loss_alpha_IMPROVE}
+    \end{subfigure}
+    \caption{These figures shows the values of the logistic classifier's $\alpha$ coefficients accross the rounds of the repeated game. The simulations parameters are the same as those used to produce figures \ref{fig:mean_pertAllSimpleHIGH_LOSS} and \ref{fig:mean_pertImproveSimpleHIGH_LOSS}.}
+\end{figure*}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Under- and overspecification}
+\label{sec:over_under_specification}
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+In this subsection, we answer our third research question---that is can underspecified models, such as a linear logistic classifier, outperform overspecified models like a deep neural network? 
+
+We define overspecified models as the ones which can capture functional forms more complex than the one they are trying to estimate. Symmetrically, we define a model as underspecified if it can only capture a fraction of some true function. For example, if we define some target function $f_{true}(x,y|\beta_1,\beta_2)= \beta_1 x+\beta_2 y^2$. Then, model $f_a(x,y|\beta_1,\beta_2)= \beta_1 x+\beta_2 y$ is underspecified with regard to the true function $f_{true}(\cdot)$.  Symmetrically, another model defined as $f_b(x,y|\beta_1,\beta_2,\beta_3,\beta_4)= \beta_1 x+\beta_2 y +\beta_1 x^2 +\beta_2 x^3$ is overspecified.
+
+Neural networks are known to be universal approximators---that is, they can, given enough data, they can approximate any 
+function~\citep[see, e.g.,][]{hornik1989multilayer,hornik1991approximation}. Therefore, a neural network can be said to be overspecified for any functional form $f_{true}(\cdot)$. 
+
+The linear logistic classifier used by what we defined in section \ref{sec:model} as an  \textit{unsophisticated} lender can be underspecified. In our previous analysis, we focussed on the cases where the true function mapping the borrowers' variables to their respective probability of \textit{bad} was linear. In such a set-up, the linear-logistic classifier is correctly specified---that is, neither over- nor underspecified. With equation \eqref{equ:mapping_non_lin}, we also define a non-linear mapping for which the linear logistic classifier is underspecified. 
+
+As a benchmark, we start by investigating the static scenario when the borrowers do not adapt to the lender's decision function. In table \ref{table:unpert_pi}, we report the average profit of the lender when the borrowers do not perturb their inputs. We see that when $f_{true}(\cdot)$ is linear, the correctly specified model slightly outperforms the overspecified neural network.\footnote{The small difference in average profit (0.02) when the mapping is linear can be explained as numerical noise. The lender using a linear logistic classifier has to correctly estimate the four parameters of his model. The same lender using a neural network with three layers containing 64, 32, and 16 neurons has to estimate $2,881$ parameters. This massive difference in the complexity of the model's calibration significantly increases the likelihood of small numerical errors.}
+When the true mapping is non-linear, we see that the neural network significantly outperforms the underspecified linear logistic classifier with an average excess profit of 0.34. 
+
+
+None of these two results are surprising: the overspecified model slightly underperformed the correctly specified one because of numerical noise, while the underspecified model is significantly outperformed by the overspecified one. In other words, when the input distribution is static, it is only slightly better to use the correct model than using a neural network. However, it is significantly better to use a neural network than an underspecified model as long as the model's introduction does not impact the inputs' distribution. 
+
+\begin{table}[ht!]
+   \centering
+\input{comp_pnl/r_table.tex}
+   \caption{This table shows the average profit of the lender as defined in equation \eqref{equ:pi_bar}, when the borrowers do not adapt to the lender's decision function.
+}
+\label{table:unpert_pi}
+\end{table}
+
+Next, we analyze over- and underspecification when the borrowers do adapt to the algorithm through the repeated game, which is summarized in algorithm \eqref{algo:repeated_game_with_cheat_detection}. 
+
+In figures \ref{fig:cross_algo_all} and \ref{fig:cross_algo_improve}, we show the average profit of both a sophisticated and an unsophisticated lender estimated at the end of each round. Hence, the profit in these figures has been computed when the borrowers were the last to update their strategies. In both figures, the function $f_{true}(\cdot)$ which maps the borrowers' variables to their respective probability of \textit{bad} is linear. Therefore, the neural network is overspecified while the logistic classifier is correctly specified. 
+
+We see that both under the \textit{all} and under the \textit{improve} perturbation scheme, the correctly specified model produces a slightly higher average profit than the overspecified models. We also note that in all cases, the lender's profits at the start of the repeated game is significantly lower than his profit at the end of the game. This robustness of the lender's algorithm is achieved by \textit{playing} the first few rounds of the repeated game. 
+
+In figures \ref{fig:nl_cross_algo_all} and \ref{fig:nl_cross_algo_improve}, we display the same profit lines as in figures \ref{fig:cross_algo_all} and \ref{fig:cross_algo_improve}, but the function $f_{true}(\cdot)$ is now non-linear, as defined in equation \ref{equ:mapping_non_lin}. In these two figures, the linear logistic model is now underspecified. Under the \textit{all} perturbation scheme, we see that the neural network outperforms the linear logistic classifier in most of the game's rounds. However, this outperformance is noisy and smaller than in the static case presented in table \ref{table:unpert_pi}. Under the \textit{improve} perturbation scheme, the neural network and the linear logistic classifier create similar profits for the lender. These last results show that under the \textit{improve} perturbation scheme, the advantage of the neural network over the underspecified model is entirely undone by the borrowers' perturbations. 
+
+Finally, we see that with a non-linear mapping $f_{true}(\cdot)$, and under both perturbation schemes, the profit in the first round of the game obtained with the neural network is significantly lower than the one obtained with the linear logistic classifier. The said profits represent the ones from a naive lender who does not anticipate any of the borrowers' perturbations. 
+
+This last result shows that an unanticipated endogenous perturbation following the introduction of a new decision function is likely to cost significantly more to a \textit{sophisticated} lender using a neural network than an \textit{unsophisticated} one using a linear logistic classifier. 
+
+Taken together, the results presented in this subsection show that vanilla neural networks\footnote{Vanilla neural networks here are defined as non-robust against adversarial attacks, such as a feed-forward network~\citep{goodfellow2014explaining}} are not well suited for applications when strategic endogenous perturbations of the network's inputs are likely to occur. We have shown that, even when the target function that is non-linear, the perturbation process reduces the model's performance to that of a simple linear logistic classifier. 
+
+We suggest that this weakness of neural networks can be traced back to these models sensitivity to adversarial attacks (see, section \ref{sec:literature}). We present now evidence to confirm this hypothesis by computing the average change in the perturbation of the borrowers for each round $t$---that is ,
+
+\begin{equation}\label{equ:pert_change}
+\Delta Pert_t = \frac{1}{N} \frac{1}{3}
+\sum_{d=1}^{3} \sum_{i=1}^N \left| 
+x_i^{\left( (d),(t) \right)}
+-
+x_i^{\left( (d),(t-1) \right)}
+\right|
+.
+\end{equation}
+
+This measure estimates, on average, how much an individual borrower adapts his perturbation strategy from one round to the next. 
+
+Figures \ref{fig:mp_cross_algo_all} and \ref{fig:mp_cross_algo_improve} shows this measure under both perturbation schemes when the true mapping $f_{true}(\cdot)$ is linear. In contrast, figures \ref{fig:mp_nl_cross_algo_all} and \ref{fig:mp_nl_cross_algo_improve} show the same measure when the true mapping is non-linear. In all four cases, the mean change in perturbation is higher between the first and second rounds of the game, when the borrowers' input moved from no perturbation to some perturbation. More importantly, we see that the average change in perturbation $\Delta Pert_t$ is significantly higher when the lender uses a neural network than when he uses a linear logistic classifier. 
+
+These findings show that, when the lender uses a neural network, the borrowers always adapt their perturbation strategy to the latest calibration of the neural network. They do so even when the profit of the lender is stabilized throughout the game round. Hence, the borrowers do adapt to take advantage of the networks' sensitivity to specific attacks instead of adapting because the functional form estimated by the network has changed. 
+
+
+
+
+
+
+
+\begin{figure*}[ht!]
+    \centering
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{comp_pnl/pi_homo_all}
+        \caption{\textit{All} perturbation scheme}
+        \label{fig:cross_algo_all}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{comp_pnl/pi_homo_improve}
+            \caption{\textit{Improve} perturbation}
+        \label{fig:cross_algo_improve}
+    \end{subfigure}
+    \caption{
+In these figures, we show the profits of sophisticated (neural network) and unsophisticated (logistic classifier) lenders throughout the repeated game's rounds. The lenders' profit is computed at the end of each round as defined in algorithm \ref{algo:repeated_game}, hence the borrowers where the last agents to adapt their strategies. The true function mapping the borrowers' variable to their respective probability of \textit{bad} was \textbf{linear}. It follows that the neural network is overspecified while the logistic classifier is correctly specified.}
+\end{figure*}
+
+
+\begin{figure*}[ht!]
+    \centering
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{comp_pnl/pi_nl_all}
+        \caption{\textit{All} perturbation scheme}
+        \label{fig:nl_cross_algo_all}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{comp_pnl/pi_nl_improve}
+            \caption{\textit{Improve} perturbation}
+        \label{fig:nl_cross_algo_improve}
+    \end{subfigure}
+    \caption{
+In these figures we show the profits of sophisticated (neural network) and unsophisiticated (logistic classifier) lender throughout the repeated game's rounds. The lender's profit is computed at the end of each round as defined in algorithm \ref{algo:repeated_game}, hence the borrowers where the last agents to adapt their strategies. The true function mapping the borrowers' variable to their respective probability of \textit{bad} was \textbf{non-linear}. It follows that the neural network is overspecified while the logistic classifier is under specified.}
+\end{figure*}
+
+
+
+
+%%% mean perturbation changes
+
+\begin{figure*}[ht!]
+    \centering
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{comp_pnl/m_p_homo_all}
+        \caption{\textit{All} perturbation scheme}
+        \label{fig:mp_cross_algo_all}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{comp_pnl/m_p_homo_improve}
+            \caption{\textit{Improve} perturbation}
+        \label{fig:mp_cross_algo_improve}
+    \end{subfigure}
+    \caption{
+In these figures we show the average change in the borrowers' perturbation strategy as defined in equation \ref{equ:pert_change}. The true mapping function $f_{true}$ in both figures is \textit{linear}. 
+}
+\end{figure*}
+
+
+\begin{figure*}[ht!]
+    \centering
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{comp_pnl/m_p_nl_all}
+        \caption{\textit{All} perturbation scheme}
+        \label{fig:mp_nl_cross_algo_all}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=.99\linewidth]{comp_pnl/m_p_nl_improve}
+            \caption{\textit{Improve} perturbation}
+        \label{fig:mp_nl_cross_algo_improve}
+    \end{subfigure}
+    \caption{
+In these figures we show the average change in the borrowers' perturbation strategy as defined in equation \ref{equ:pert_change}. The true mapping function $f_{true}$ in both figures is \textit{non-linear}. }
+\end{figure*}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Lending club analysis}
+\label{sec:result_real_data}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+TODO, write the analysis here 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}
+\label{sec:Conclusion}
+%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\clearpage
+\section{Appendix}
+
+\subsection{Ordinary least square, two dimension}
+\label{appendix:ols_2_dim}
+Next, we extend our analysis to two dimensions. Let $x_1$ and $x_2$ be two independent variables with mean $\bar{x_1}$ and $\bar{x_2}$. The lenders score is given by the following formula: 
+
+\begin{equation}
+f\left(x_{1}, x_{2} | \theta\right)=\alpha+\beta_1 x_{1}+\beta_2 x_{2},
+\end{equation}
+
+where,
+
+\begin{equation} \label{equ:b1}
+\beta_{1}=\frac{\left(\sum (x_{2}-\bar{x_{2}})^{2}\right)\left(\sum (x_{1}-\bar{x_{1}}) (y-\bar{y})\right)-\left(\sum (x_{1}-\bar{x_{1}}) (x_{2}-\bar{x_{2}})\right)\left(\sum (x_{2}-\bar{x_{2}}) (y-\bar{y})\right)}{\left(\sum (x_{1}-\bar{x_{1}})^{2}\right)\left(\sum (x_{2}-\bar{x_{2}})^{2}\right)-\left(\sum (x_{1}-\bar{x_{1}}) (x_{2}-\bar{x_{2}})\right)^{2}},
+\end{equation}
+
+\begin{equation} \label{equ:b2}
+\beta_{2}=\frac{\left(\sum (x_{1}-\bar{x_{1}})^{2}\right)\left(\sum (x_{2}-\bar{x_{2}}) (y-\bar{y})\right)-\left(\sum (x_{1}-\bar{x_{1}}) (x_{2}-\bar{x_{2}})\right)\left(\sum (x_{1}-\bar{x_{1}}) (y-\bar{y})\right)}{\left(\sum (x_{1}-\bar{x_{1}})^{2}\right)\left(\sum (x_{2}-\bar{x_{2}})^{2}\right)-\left(\sum (x_{1}-\bar{x_{1}}) (x_{2}-\bar{x_{2}})\right)^{2}},
+\end{equation}
+
+and 
+
+\begin{equation} \label{equ:a_two_dim}
+\alpha=\bar{y}-\beta_{1} \bar{x_{1}}-\beta_{2} \bar{x_{2}}.
+\end{equation}
+
+Let $c_{1}=m_{1}-x_{1}$ and $c_{2}=m_{2}-x_{2}$ be the measure of cheat size of a given borrower. Then, extending equation \ref{equ:hui_borrower}, we can write the borrowers' optimisation problem as: 
+
+\begin{equation}
+c_{1}, c_2=\underset{c_{1}, c_{2}}{\arg \min }\left(\alpha
++\beta_1\left(x_{1}+c_{1}\right)
++\beta_2\left(x_{2}+c_{2}\right)
++\lambda_{i} c_{1}^{2} \Lambda_{1}^{-1}
++\lambda_{i} c_{2}^{2} \Lambda_{2}^{-1}
+\right)
+\end{equation}
+
+Solving the first order condition we get the optimal cheat level in the two variables as: 
+
+\begin{equation}
+c_{1}=\frac{1}{2 \lambda_i} \beta_{1} \Lambda_{1}
+\end{equation}
+
+\begin{equation}
+c_{2}=\frac{1}{2 \lambda_i} \beta_{2} \Lambda_{2}
+\end{equation}
+
+$c_1$ and $c_2$ is function of their respective cheat cost $\Lambda$ and  regression coefficient $\beta$. In the special case where $\lambda_i=\lambda \forall i$ we can generalize the one dimensional result that only $\alpha$ will adapt to the perturbed input. Indeed, in this simplfiy case, $c_1$ and $c_2$ are equal for all agents which means that $x_1-\bar{x_1} = x_{1}+c_{1} - (\bar{x_{1}}+\bar{c_{1}})$ as $c_{1} = \bar{c_{1}}$. Hence equation \eqref{equ:b1} and \eqref{equ:b2} are not affected by the perturbation and $\alpha$ becomes: 
+
+
+\begin{equation} \label{equ:a_two_dim_pert}
+\alpha_2=\bar{y}-\beta_{1} (\bar{x_{1}}+c_{1})-\beta_{2} (\bar{x_{2}}+c_{2}).
+\end{equation}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Gan Formulation of the lender's cost}
+\label{sec:simulated_data}
+%%%%%%%%%%%%%%%%%%%%%%%%
+Adapting the robustness approach developed in \cite{hosseini2017blocking}, we can model the cost of cheating in a semi-non parametric manner. We will model the probability of getting caught for a given $m_i-x_i$ directly through a neural network instead of an inverted matrix. The method is only semi-parametric because we still need to define the cost of cheating relative to the benefits of getting a loan, but it will be a single easy to interpret parameters.
+
+ 
+\subsubsection{Borrower}
+In this small subsection, we propose a small economic justification of the one-parameter model presented in the next section. 
+
+Let $c(x_i-m_i)$ be the probability of catching agent $i$ falsifying their true input $x_i$ into submitted input $m_i$. We will model the borrower's dilemma as follows. At any time, being accepted by the lender for a loan increases his utility by some fixed value $\gamma$. The borrower is assumed risk-neutral and discounts his future utility with some factor $\theta$. 
+Assuming he does not falsify his input, his expected utility is defined as: 
+\begin{equation}
+u_{x^{i}} = \sum_{t=1}^{\infty} \gamma \theta^{t} \phi(x_i)
+\end{equation}
+
+Getting caught cheating will not only cost him $\gamma$ for not receiving a loan but also any chance of getting a loan in the future. Hence, his utility when cheating is defined as: 
+
+\begin{equation}
+u_{m^{i}} = \mathbb{E} \left[ \sum_{t=1}^{\tau} \gamma \theta^{t} \phi(x_i) 
+\right]
+\end{equation}
+
+Where $\tau$ is the random stopping time when the borrower is caught from cheating and denied the opportunity to apply for a loan in the future. Assuming $c(x_i-m_i)$ is i.i.d across time for a given $x_i-m_i$, $\tau$ follows a geometric distribution with $\mathbb{E}(\tau)= \frac{1-c(x_i-m_i)}{c(x_i-m_i)}$ and $P(\tau=t)=(1-c(x_i-m_i))^tc(x_i-m_i)$. Which means we can write $u_{m^i}$ as: 
+
+\begin{equation} \label{equ:gan_u_cheat}
+u_{m^{i}} = \left[
+\sum_{t=1}^{\infty} (1-c(x_i-m_i))^tc(x_i-m_i) 
+ \sum_{\bar{t}=1}^{t} \gamma \theta^{\bar{t}} \phi(x_i) 
+ \right]
+\end{equation}
+
+For a given algorithm $\phi(\cdot)$ and probability of getting caught $c(\cdot)$ a borrower cheats if $u_{x_i}<u{\hat{m}_i}$ where $\hat{m}_i$ maximize equation \ref{equ:gan_u_cheat}
+
+\subsubsection{Single parameter version}
+In this section, I propose a single parameter way of modeling the decision of a borrower deciding to cheat or not. This process is applied to one who's unperturbed input is refused by the lender's algorithm, $\phi(x_i)=0$. This simpler formulation of the problem is perhaps a less direct link to the traditional economic model but can be defined by a single easy to interpret the parameter.
+
+The cheating borrower has three potential states of nature in which he may end up. Ideally, he gets the loan but doesn't get caught where he gains some utility $\gamma$. In the worst-case scenario, he gets the loan but gets caught and gets a utility cost $\zeta$. Alternatively, he can simply not get the loan. This last state of nature can be standardized to have no impact on his utility as he will simply not cheat if it does not allow him to get a loan. As such, we can write his expected utility as:
+
+\begin{equation}
+\mathbb{E}(u) = \gamma f(m_i|\hat{\theta}) + \zeta c(x_i-m_i)
+\end{equation}
+
+It follows that the borrowers cheat if: 
+
+\begin{equation}
+\gamma f(m_i|\hat{\theta}) + \zeta c(x_i-m_i) > 0
+\end{equation}
+
+
+\begin{equation}
+-\frac{\gamma}{\zeta} \frac{f(m_i|\hat{\theta})}{c(x_i-m_i)} > 1
+\end{equation}
+
+We can finally define $\kappa = -\frac{\gamma}{\zeta}$ as the strictly positive ratio of utility.\footnote{$\zeta$ is strictly negative} Between receiving a loan and getting caught. A $\kappa$ below 1 captures a world in which borrowers' gain in getting a loan is comparatively weaker than the costs of getting caught. While a $\kappa$ bigger than 1 captures a world in which the cost of getting caught is comparatively weaker than the benefits of getting a loan. 
+
+
+\subsubsection{Lender with cheat detection}
+In this game, the lender has to define two algorithms. The first, $\phi(x_i)$, transforms the borrower's input into a binary variable giving or not a loan to the lender. This is similar to what is defined in section \ref{sec:model} by equation \ref{equ:tau_find} assuming no cheat. Only the original unperturbed data are used at this stage. 
+
+The second algorithm, $\xi(\cdot)$, is used to catch a cheater. This is performed at time $t+1$ after having assigned loans according to algorithm $\phi(m_i)$ at time $t$. 
+
+$\xi(m_i, f(m_i | \hat{\theta}), y_i| \Gamma)$ is function of a set of parameters $\Gamma$ and takes as input the perturbed covariates $m_i$, the probability of default $f(m_i | \hat{\theta})$ as estimated in the algorithm $\phi(\cdot)$ and the binary variable equal to 1 if the borrowers defaulted. The latter are available because detecting cheater is performed at time $t+1$ where default have been observed. 
+
+\subsubsection{Repeated game}
+The repeated game is a very simple extension of what was proposed in previous sections. At every step of the game, the lenders update both his decision algorithm and his cheat detection algorithm instead of simply one. Every other step is similar. 
+
+The algorithm requires a cheat algorithm to perturb, and the cheat algorithm requires to perturb data to train. This means that we have a problem to initialize the cheat algorithm, this can, however, easily be worked around by either using a very simplistic $\xi(m_i, f(m_i | \hat{\theta}), y_i| \Gamma) = \alpha$ for some fix $\alpha$ in the first round or follows the perturbation rules defined in the previous section for the first round. Algorithm \ref{algo:repeated_game_with_cheat_detection} summarize the step of the convergence game with quasi-non-parametric cheat cost. 
+
+
+\begin{algorithm}[H]
+\SetAlgoLined\KwData{$N$ historical pairs $[x_i;y_i]$}
+\KwResult{$\hat{\theta}$,  $\hat{\tau}$, $\hat{\Gamma}$}
+initialization\;
+$\hat{\theta}_0 = \underset{\theta}{\arg \min } -\sum_{i=1}^N y_i \log(f(x_i | \theta)) + (1-y_i) \log(1-f(x_i | \theta))$ \;
+$\hat{\tau}_0 = \underset{\tau}{\arg \min } \sum_{i=1}^N 
+\mathbbm{1}_{f(x_i | \hat{\theta_0})<\hat{\tau}} G -  \mathbbm{1}_{f(x_i | \hat{\theta_0})<\hat{\tau}} L$ \;
+$m_i^{(0)}=x_i$\;
+$m_i^{(1)}=x_i + 2\epsilon$\;
+$t=1$\;
+$\xi(m_i, f(m_i | \hat{\theta}), y_i| \hat{\Gamma}) = \alpha$\;
+\While{$\frac{1}{N} \sum_{i=0}^N ||m_i^{(t-1)}-m_i^{(t)}||<\epsilon$}{
+$m_i^{(t)} = Pert(x_i,\hat{\theta}_t, \hat{\tau}_t, \xi(\cdot,\hat{\Gamma}_t))$\;
+
+$\hat{\theta}_t = \underset{\theta}{\arg \min } -\sum_{i=1}^N y_i \log(f(m_i^{(t)} | \theta)) + (1-y_i) \log(1-f((m_i^{(t)}| \theta))$ \;
+$\hat{\tau}_t = \underset{\tau}{\arg \min } \sum_{i=1}^N 
+\mathbbm{1}_{f(x_i | \hat{\theta}_t)<\tau} G -  \mathbbm{1}_{f(x_i | \hat{\theta}_t)<\tau} L$ \;
+
+$\hat{\Gamma}_t = \underset{\Gamma}{\arg \min } -\sum_{i=1}^N \mathbbm{1}_{x_i \neq m_i} \log(\xi(m_i, f(m_i | \hat{\theta}), y_i| \Gamma)) + \mathbbm{1}_{x_i = m_i} \log(1-\xi(m_i, f(m_i | \hat{\theta}), y_i| \Gamma))$ \;
+
+$t+1$\;
+}
+$\hat{\theta} = \hat{\theta}_t$\;
+$\hat{\tau} = \hat{\tau}_t$\;
+$\hat{\Gamma} = \hat{\Gamma}_t$\;
+
+\caption{Repeated Game With Cheat detection}
+\label{algo:repeated_game_with_cheat_detection}
+\end{algorithm}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\clearpage
+
+
+
+\bibliography{temp.bib}{}
+\bibliographystyle{apalike}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
+
